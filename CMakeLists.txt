@@ -208,3 +208,20 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+find_library(MID HCoilMiddlewareLib )
+find_library(PSU  DxkdpLib )
+find_library(LINACT LinActuatorLib )
+find_library(TMETER LakeshoreF71Lib )
+find_library(SERIAL CppLinuxSerial )
+find_library( ASTAR a-star)
+
+set(MiddlewareLibs ${MID} ${PSU} ${LINACT} ${TMETER} ${SERIAL} Threads::Threads)
+set(PSULibs ${PSU} ${SERIAL})
+set(LinActLibs ${LINACT} ${SERIAL})
+set(TmeterLibs ${TMETER} ${SERIAL})
+set(EIGEN Eigen3::Eigen)
+set(THREADS Threads::Threads)
+
+include_directories(${CMAKE_SOURCE_DIR}/include)
+

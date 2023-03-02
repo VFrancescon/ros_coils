@@ -120,8 +120,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-# ${catkin_INCLUDE_DIRS}
+  include
+  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -224,4 +224,7 @@ set(EIGEN Eigen3::Eigen)
 set(THREADS Threads::Threads)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
+
+add_executable(psuTest src/psuTest.cpp)
+target_link_libraries(psuTest ${catkin_LIBRARIES} ${PSULibs})
 

@@ -7,84 +7,113 @@ PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
     {
         COM_PORT = "/dev/ttyUSB0";
     }
-    float vConv, iConv;
+    
     if (!ros::param::get("~vConv", vConv))
     {
-        vConv = 0.1;
+        vConv = 0.1f;
     }
     if (!ros::param::get("~iConv", iConv))
     {
-        iConv = 0.01;
+        iConv = 0.01f;
     }
 
     currentI = 0;
     currentV = 0;
 
-    // X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
+    X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
     ROS_INFO("Started PSU with port: %s, vConv %f and iConv %f",
-            COM_PORT.c_str(), vConv, iConv);
+             COM_PORT.c_str(), vConv, iConv);
 
     currentSubscriber_ = nh->subscribe(
         "current_control", 10, &PsuROSWrapper::callbackCurrentWrite, this);
 
     voltageSubscriber_ = nh->subscribe(
         "voltage_control", 10, &PsuROSWrapper::callbackVoltageWrite, this);
+
+    viSubscriber_ = nh->subscribe(
+        "vi_control", 10, &PsuROSWrapper::callbackVIWrite, this
+    );
+
+    powerOnServer_ = nh->advertiseService(
+        "powerON", &PsuROSWrapper::callbackSetup, this);
+
+    shutdownServer_ = nh->advertiseService(
+        "powerOFF", &PsuROSWrapper::callbackShutdown, this);
 }
 
-void PsuROSWrapper::callbackCurrentWrite(const std_msgs::Int32 &msg)
-{   
-    int inputData = msg.data;
+void PsuROSWrapper::callbackCurrentWrite(const std_msgs::Float32 &msg)
+{
+    bool enactCommand = compare_float(this->currentI, msg.data, this->iConv);
 
-    ROS_INFO("Input is: %d. Same condition flag: %d", msg.data, currentI == inputData);
-    if ( currentI == inputData )
+    if (enactCommand)
     {
         ROS_INFO("Input is the same as current Val.No need to change current.");
     }
     else
     {
-        ROS_INFO("Setting Current to: %d", inputData);
-        // X1_->WriteCurrent(inputData);
+        ROS_INFO("Setting Current to: %f", msg.data);
+        X1_->WriteCurrent(msg.data);
+        this->currentI = msg.data;
     }
 }
 
-void PsuROSWrapper::callbackVoltageWrite(const std_msgs::Int32 &msg)
-{   
-    int inputData = msg.data;
-    ROS_INFO("Input is: %d. Same condition flag: %d", msg.data, currentV == inputData);
-    if ( currentV == inputData )
+void PsuROSWrapper::callbackVoltageWrite(const std_msgs::Float32 &msg)
+{
+    bool enactCommand = compare_float(this->currentV, msg.data, this->vConv);
+
+    if (enactCommand)
     {
-        ROS_INFO("Input is %d the same as current Val %d .No need to change Voltage.",
-            currentV, inputData);
+        ROS_INFO("Input is the same as current Val.No need to change voltage.");
+        return;
     }
     else
     {
-        ROS_INFO("Setting Voltage to: %d", inputData);
-        // X1_->WriteVoltage(inputData);
+        ROS_INFO("Setting Voltage to: %f", msg.data);
+        X1_->WriteVoltage(msg.data);
+        this->currentV = msg.data;
     }
 }
 
-void PsuROSWrapper::callbackSetup(
-    std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
-{
-    // X1_->PoCtrl(0x01);
+void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg){
+    bool Vchange = compare_float(this->currentV, msg.V, this->vConv);
+    bool Ichange = compare_float(this->currentI, msg.I, this->iConv);
+    
+    if(Vchange && Ichange){
+        ROS_INFO("No need to do anything. Values are unchanged");
+    }else{
+        ROS_INFO("Setting V=%f, I=%f", msg.V, msg.I);
+        X1_->WriteVI(msg.V, msg.I);
+        this->currentV = msg.V;
+        this->currentI = msg.I;
+    }
 }
 
-void PsuROSWrapper::callbackShutdown(
+
+bool PsuROSWrapper::callbackSetup(
     std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
 {
-    // X1_->PoCtrl(0x00);
+    X1_->PoCtrl(0x01);
+    res.message = "Successfully setup.";
+    res.success = true;
+    return true;
 }
 
+bool PsuROSWrapper::callbackShutdown(
+    std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
+{
+    X1_->PoCtrl(0x00);
+    res.message = "Successfully setup.";
+    res.success = true;
+    return true;
+}
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "PSUTEST");
     ros::NodeHandle nh;
-    ros::AsyncSpinner spinner(1);
+    ros::AsyncSpinner spinner(2);
     spinner.start();
     PsuROSWrapper psu1(&nh);
-    
-
 
     ros::waitForShutdown();
 }

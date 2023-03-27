@@ -55,6 +55,7 @@ add_message_files(
   FILES
   magField.msg
   VI.msg
+  Polarity.msg
 )
 
 ## Generate services in the 'srv' folder

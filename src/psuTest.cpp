@@ -7,10 +7,10 @@ PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
     {
         COM_PORT = "/dev/ttyUSB0";
     }
-    
+
     if (!ros::param::get("~vConv", vConv))
     {
-        vConv = 0.1f;
+        vConv = 0.01f;
     }
     if (!ros::param::get("~iConv", iConv))
     {
@@ -19,24 +19,26 @@ PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
 
     currentI = 0;
     currentV = 0;
-    std::string nodeName = ros::this_node::getName();
+    currentPolarity = true;
+    nodeName = ros::this_node::getName();
 
     // X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
     ROS_INFO("Started PSU with port: %s, vConv %f and iConv %f",
              COM_PORT.c_str(), vConv, iConv);
-    // ROS_INFO("Node name: %s", ros::this_node::getName().c_str());
 
+    // currentSubscriber_ = nh->subscribe(
+    //     "current_control" + nodeName, 10, &PsuROSWrapper::callbackCurrentWrite, this);
 
-    currentSubscriber_ = nh->subscribe(
-        "current_control" + nodeName, 10, &PsuROSWrapper::callbackCurrentWrite, this);
-
-    voltageSubscriber_ = nh->subscribe(
-        "voltage_control" + nodeName, 10, &PsuROSWrapper::callbackVoltageWrite, this);
+    // voltageSubscriber_ = nh->subscribe(
+    //     "voltage_control" + nodeName, 10, &PsuROSWrapper::callbackVoltageWrite, this);
 
     viSubscriber_ = nh->subscribe(
-        "vi_control" + nodeName, 10, &PsuROSWrapper::callbackVIWrite, this
-    );
+        "vi_control" + nodeName, 10, &PsuROSWrapper::callbackVIWrite, this);
 
+    polaritySubscriber_ = nh->subscribe(
+        "polarity_control" + nodeName, 10, &PsuROSWrapper::callbackPolarity, this
+    );
+    
     powerOnServer_ = nh->advertiseService(
         "powerON" + nodeName, &PsuROSWrapper::callbackSetup, this);
 
@@ -77,13 +79,17 @@ void PsuROSWrapper::callbackVoltageWrite(const std_msgs::Float32 &msg)
     }
 }
 
-void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg){
+void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
+{
     bool Vchange = compare_float(this->currentV, msg.V, this->vConv);
     bool Ichange = compare_float(this->currentI, msg.I, this->iConv);
-    
-    if(Vchange && Ichange){
+
+    if (Vchange && Ichange)
+    {
         ROS_INFO("No need to do anything. Values are unchanged");
-    }else{
+    }
+    else
+    {
         ROS_INFO("Setting V=%f, I=%f", msg.V, msg.I);
         // X1_->WriteVI(msg.V, msg.I);
         this->currentV = msg.V;
@@ -91,6 +97,23 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg){
     }
 }
 
+void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
+{
+    if(msg.Polarity == this->currentPolarity){
+        ROS_INFO("No need to act");
+        return;
+    } else {
+        ROS_INFO("Setting polarity to %d", msg.Polarity);
+        
+        if( this->nodeName == "/Z2" ){
+            ROS_INFO("Using GEN2");
+            // X1_->setPolarityGen2(msg.Polarity);
+        } else {
+            // X1_->setPolarity(msg.Polarity, 0x01);
+        }
+        this->currentPolarity = msg.Polarity;
+    }
+}
 
 bool PsuROSWrapper::callbackSetup(
     std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)

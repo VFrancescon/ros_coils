@@ -7,40 +7,27 @@
         <param name="publish_current_speed_frequency" type="double" value="10.0" />
         <param name="publish_motor_status_frequency" type="double" value="2.0" /> -->
     </node>
-    <node name="X2" pkg="ros_coils" type="psuTest" output="screen">
+    
+    <!-- <node name="X2" pkg="ros_coils" type="psuTest" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB1"/>
         <param name="vConv" type="double" value="0.1"/>
-        <!-- <param name="max_speed" type="int" value="5" />
-        <param name="publish_current_speed_frequency" type="double" value="10.0" />
-        <param name="publish_motor_status_frequency" type="double" value="2.0" /> -->
-    </node>
+    </node> -->
 
     <!-- Y Supplies -->
-    <node name="Y1" pkg="ros_coils" type="psuTest" output="screen">
+    <!-- <node name="Y1" pkg="ros_coils" type="psuTest" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB4"/>
-        <!-- <param name="max_speed" type="int" value="5" />
-        <param name="publish_current_speed_frequency" type="double" value="10.0" />
-        <param name="publish_motor_status_frequency" type="double" value="2.0" /> -->
     </node>
-    <node name="Y2" pkg="ros_coils" type="psuTest" output="screen">
+     -->
+    <!-- <node name="Y2" pkg="ros_coils" type="psuTest" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB5"/>
-        <!-- <param name="max_speed" type="int" value="5" />
-        <param name="publish_current_speed_frequency" type="double" value="10.0" />
-        <param name="publish_motor_status_frequency" type="double" value="2.0" /> -->
-    </node>    
+    </node>     -->
     
     <!-- Z Supplies -->
-    <node name="Z1" pkg="ros_coils" type="psuTest" output="screen">
+    <!-- <node name="Z1" pkg="ros_coils" type="psuTest" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB2"/>
-        <!-- <param name="max_speed" type="int" value="5" />
-        <param name="publish_current_speed_frequency" type="double" value="10.0" />
-        <param name="publish_motor_status_frequency" type="double" value="2.0" /> -->
-    </node>
-    <node name="Z2" pkg="ros_coils" type="psuTest" output="screen">
+    </node> -->
+    <!-- <node name="Z2" pkg="ros_coils" type="psuTest" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB3"/>
-        <!-- <param name="max_speed" type="int" value="5" />
-        <param name="publish_current_speed_frequency" type="double" value="10.0" />
-        <param name="publish_motor_status_frequency" type="double" value="2.0" /> -->
-    </node>
+    </node> -->
     
 </launch>

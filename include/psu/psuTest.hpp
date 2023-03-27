@@ -40,7 +40,6 @@ private:
 
 public:
     PsuROSWrapper(ros::NodeHandle *nh);
-
     /**
      * @brief callback Function for current write. Unused. Look at VIWrite instead.
      *

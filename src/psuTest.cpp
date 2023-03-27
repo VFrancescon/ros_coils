@@ -84,7 +84,7 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
     bool Vchange = compare_float(this->currentV, msg.V, this->vConv);
     bool Ichange = compare_float(this->currentI, msg.I, this->iConv);
 
-    if (Vchange && Ichange)
+    if (!Vchange && !Ichange)
     {
         ROS_INFO("No need to do anything. Values are unchanged");
     }
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "PSUTEST");
     ros::NodeHandle nh;
-    ros::AsyncSpinner spinner(2);
+    ros::AsyncSpinner spinner(6);
     spinner.start();
     PsuROSWrapper psu1(&nh);
 

@@ -61,7 +61,7 @@ public:
 
 bool compare_float(float x, float y, float epsilon = 0.01f)
 {
-    std::cout << "x: " << x << "- y: " << y << "= " << fabs(x - y) << "\n";
+    // std::cout << "x: " << x << "- y: " << y << "= " << fabs(x - y) << "\n";
     if (fabs(x - y) < epsilon)
     {
         return true;

@@ -81,16 +81,16 @@ void PsuROSWrapper::callbackVoltageWrite(const std_msgs::Float32 &msg)
 
 void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
 {
-    bool Vchange = compare_float(this->currentV, msg.V, this->vConv);
-    bool Ichange = compare_float(this->currentI, msg.I, this->iConv);
+    bool Vchange = msg.V == this->currentV;
+    bool Ichange = msg.I == this->currentI;
 
-    if (!Vchange && !Ichange)
+    if (Vchange && Ichange)
     {
-        ROS_INFO("No need to do anything. Values are unchanged");
+        ROS_INFO("PSU: %s. No need to do anything. Values are unchanged", this->nodeName.c_str());
     }
     else
     {
-        ROS_INFO("Setting V=%f, I=%f", msg.V, msg.I);
+        ROS_INFO("PSU: %s. Setting V=%f, I=%f", this->nodeName.c_str(), msg.V, msg.I);
         // X1_->WriteVI(msg.V, msg.I);
         this->currentV = msg.V;
         this->currentI = msg.I;
@@ -100,10 +100,10 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
 void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
 {
     if(msg.Polarity == this->currentPolarity){
-        ROS_INFO("No need to act");
+        ROS_INFO("PSU: %s. No need to act", this->nodeName.c_str());
         return;
     } else {
-        ROS_INFO("Setting polarity to %d", msg.Polarity);
+        ROS_INFO("PSU: %s. Setting polarity to %d",this->nodeName.c_str(), msg.Polarity);
         
         if( this->nodeName == "/Z2" ){
             ROS_INFO("Using GEN2");

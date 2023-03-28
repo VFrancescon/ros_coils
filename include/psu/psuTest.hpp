@@ -35,7 +35,7 @@ private:
 
     int currentI, currentV;
     float vConv, iConv;
-    bool currentPolarity;
+    uint8_t currentPolarity;
     std::string nodeName;
 
 public:
@@ -51,7 +51,7 @@ public:
      * @brief callback Function for Voltage write. Unused. Look at VIWrite instead.
      *
      * @param msg std/Float32. Voltage to write
-     */    
+     */
     void callbackVoltageWrite(const std_msgs::Float32 &msg);
     void callbackVIWrite(const ros_coils::VI &msg);
     void callbackPolarity(const ros_coils::Polarity &msg);

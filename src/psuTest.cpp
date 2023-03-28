@@ -17,12 +17,13 @@ PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
         iConv = 0.01f;
     }
 
-    currentI = 0;
-    currentV = 0;
-    currentPolarity = true;
+    currentI = 0.f;
+    currentV = 0.f;
+    currentPolarity = 0x01;
     nodeName = ros::this_node::getName();
 
-    // X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
+    X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
+    X1_->PoCtrl(0x01);
     ROS_INFO("Started PSU with port: %s, vConv %f and iConv %f",
              COM_PORT.c_str(), vConv, iConv);
 
@@ -48,9 +49,9 @@ PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
 
 void PsuROSWrapper::callbackCurrentWrite(const std_msgs::Float32 &msg)
 {
-    bool enactCommand = compare_float(this->currentI, msg.data, this->iConv);
+    bool stop_command = compare_float(this->currentI, msg.data, this->iConv);
 
-    if (enactCommand)
+    if (stop_command)
     {
         ROS_INFO("Input is the same as current Val.No need to change current.");
     }
@@ -64,9 +65,9 @@ void PsuROSWrapper::callbackCurrentWrite(const std_msgs::Float32 &msg)
 
 void PsuROSWrapper::callbackVoltageWrite(const std_msgs::Float32 &msg)
 {
-    bool enactCommand = compare_float(this->currentV, msg.data, this->vConv);
+    bool stop_command = compare_float(this->currentV, msg.data, this->vConv);
 
-    if (enactCommand)
+    if (stop_command)
     {
         ROS_INFO("Input is the same as current Val.No need to change voltage.");
         return;
@@ -81,17 +82,28 @@ void PsuROSWrapper::callbackVoltageWrite(const std_msgs::Float32 &msg)
 
 void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
 {
-    bool Vchange = msg.V == this->currentV;
-    bool Ichange = msg.I == this->currentI;
+    //a bit underhanded, but I cannot be bothered writing a 
+    //safer float comparison and we need this not to overwhelm the coils
+    int adjCV = (int) this->currentV * 100;
+    int adjCI = (int) this->currentI * 100;
+    int adjMV = (int) msg.V * 100;
+    int adjMI = (int) msg.I * 100;
+    bool Vchange = adjCV == adjMV;
+    bool Ichange = adjCI == adjMI;
+    // std::cout << "AdjCV: " << adjCV << " adjMV " << adjMV << "\n";
+    // std::cout << "AdjCV == adjMV " << (adjCV == adjMV) << "\n"; 
+    // std::cout << "AdjCI: " << adjCI << " adjMI " << adjMI << "\n";
+    // std::cout << "AdjCI == adjMI " << (adjCI == adjMI) << "\n";
 
-    if (Vchange && Ichange)
+    bool stop_command = Vchange && Ichange;
+    if (stop_command)
     {
-        ROS_INFO("PSU: %s. No need to do anything. Values are unchanged", this->nodeName.c_str());
+        ROS_INFO("PSU: %s. WriteVI. No need to act.", this->nodeName.c_str());
     }
     else
     {
         ROS_INFO("PSU: %s. Setting V=%f, I=%f", this->nodeName.c_str(), msg.V, msg.I);
-        // X1_->WriteVI(msg.V, msg.I);
+        X1_->WriteVI( msg.V, msg.I);
         this->currentV = msg.V;
         this->currentI = msg.I;
     }
@@ -100,16 +112,16 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
 void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
 {
     if(msg.Polarity == this->currentPolarity){
-        ROS_INFO("PSU: %s. No need to act", this->nodeName.c_str());
+        ROS_INFO("PSU: %s. PolarityChange. No need to act", this->nodeName.c_str());
         return;
     } else {
         ROS_INFO("PSU: %s. Setting polarity to %d",this->nodeName.c_str(), msg.Polarity);
         
         if( this->nodeName == "/Z2" ){
             ROS_INFO("Using GEN2");
-            // X1_->setPolarityGen2(msg.Polarity);
+            X1_->setPolarityGen2(msg.Polarity);
         } else {
-            // X1_->setPolarity(msg.Polarity, 0x01);
+            X1_->setPolarity(msg.Polarity);
         }
         this->currentPolarity = msg.Polarity;
     }
@@ -118,7 +130,7 @@ void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
 bool PsuROSWrapper::callbackSetup(
     std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
 {
-    // X1_->PoCtrl(0x01);
+    X1_->PoCtrl(0x01);
     res.message = "Successfully setup.";
     res.success = true;
     return true;
@@ -127,7 +139,7 @@ bool PsuROSWrapper::callbackSetup(
 bool PsuROSWrapper::callbackShutdown(
     std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
 {
-    // X1_->PoCtrl(0x00);
+    X1_->PoCtrl(0x00);
     res.message = "Successfully setup.";
     res.success = true;
     return true;

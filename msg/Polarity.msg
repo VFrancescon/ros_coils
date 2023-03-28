@@ -1,1 +1,1 @@
-bool Polarity
+uint8 Polarity

@@ -8,7 +8,9 @@ FieldPublisher::FieldPublisher(ros::NodeHandle *nh)
 
     // Subscriber instantiation here
     fieldSubscriber_ = nh->subscribe("field", 10, &FieldPublisher::callbackField, this);
-
+    this->bx = 0;
+    this->by = 0;
+    this->bz = 0;
     // Publisher instantiation here
 }
 
@@ -40,89 +42,125 @@ int main(int argc, char *argv[])
     ros::NodeHandle nh;
     FieldPublisher field(&nh);
     // trigger the PSU power on service
-    ros::ServiceClient poweronClient = nh.serviceClient<std_srvs::Trigger>("powerON/X1");
-    std_srvs::Trigger poweronTrigger;
-    poweronClient.call(poweronTrigger);
+    // ros::ServiceClient poweronClient = nh.serviceClient<std_srvs::Trigger>("powerON/X1");
+    // std_srvs::Trigger poweronTrigger;
+    // poweronClient.call(poweronTrigger);
 
-    ros::Publisher x1VIpub = nh.advertise<ros_coils::VI>("/vi_control/X1", 10);
-    ros::Publisher x2VIpub = nh.advertise<ros_coils::VI>("/vi_control/X2", 10);
-    ros::Publisher y1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y1", 10);
-    ros::Publisher y2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y2", 10);
-    ros::Publisher z1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z1", 10);
-    ros::Publisher z2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z2", 10);
+    ros::Publisher x1VIpub = nh.advertise<ros_coils::VI>("/vi_control/X1", 1);
+    ros::Publisher x2VIpub = nh.advertise<ros_coils::VI>("/vi_control/X2", 1);
+    ros::Publisher y1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y1", 1);
+    ros::Publisher y2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y2", 1);
+    ros::Publisher z1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z1", 1);
+    // ros::Publisher z2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z2", 10);
 
-    ros::Publisher x1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X1", 10);
-    ros::Publisher x2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X2", 10);
-    ros::Publisher y1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y1", 10);
-    ros::Publisher y2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 10);
-    ros::Publisher z1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 10);
-    ros::Publisher z2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z2", 10);
+    ros::Publisher x1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X1", 1);
+    ros::Publisher x2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X2", 1);
+    ros::Publisher y1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y1", 1);
+    ros::Publisher y2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 1);
+    ros::Publisher z1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 1);
+    // ros::Publisher z2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z2", 10);
 
     ros_coils::Polarity px, py, pz;
-    px.Polarity = true;
-    py.Polarity = true;
-    pz.Polarity = true;
+    px.Polarity = 0x01;
+    py.Polarity = 0x01;
+    pz.Polarity = 0x01;
 
-    bool xFlag = true, yFlag = true, zFlag = true;
-    ros::Rate freq(1);
+    ros::AsyncSpinner spinner(6);
+    ros::Rate freq(0.5);
+    ros_coils::VI viX, viY, viZ;
+
+    viX.I = 0.f;
+    viX.V = 0.f;
+
+    viY.I = 0.f;
+    viY.V = 0.f;
+
+    viZ.I = 0.f;
+    viZ.V = 0.f;
+
     while (ros::ok())
     {
-        ros_coils::VI viX, viY, viZ;
         viX.I = field.bx / field.cal_x;
         viY.I = field.by / field.cal_y;
         viZ.I = field.bz / field.cal_z;
 
         if (viX.I < 0)
         {
-            px.Polarity = false;
+            px.Polarity = 0x00;
         }
+        else
+            px.Polarity = 0x01;
         if (viY.I < 0)
         {
-            py.Polarity = false;
+            py.Polarity = 0x00;
         }
-        if (viX.I < 0)
+        else
+            py.Polarity = 0x01;
+        if (viZ.I < 0)
         {
-            pz.Polarity = true;
+            pz.Polarity = 0x00;
         }
+        else
+            pz.Polarity = 0x01;
 
-        if (px.Polarity != xFlag)
-        {
+        // if (px.Polarity != xFlag)
+        // {
             x1Polaritypub.publish(px);
             x2Polaritypub.publish(px);
-            xFlag = px.Polarity;
-        }
+             
+        // }
 
-        if (py.Polarity != yFlag)
-        {
+        // if (py.Polarity != yFlag)
+        // {
             y1Polaritypub.publish(py);
             y2Polaritypub.publish(py);
-            yFlag = py.Polarity;
-        }
+        // }
 
-        if (pz.Polarity != zFlag)
-        {
+        // if (pz.Polarity != zFlag)
+        // {
             z1Polaritypub.publish(pz);
-            z2Polaritypub.publish(pz);
-            zFlag = pz.Polarity;
-        }
+            // z2Polaritypub.publish(pz);
+        // }
+        viX.I = abs(viX.I);
+        viY.I = abs(viY.I);
+        viZ.I = abs(viZ.I);
 
-        viX.V = viX.I * 2;
-        viY.V = viY.I * 2;
-        viZ.V = viZ.I * 2;
+        viX.V = viX.I;
+        viY.V = viY.I;
+        viZ.V = viZ.I;
+
+        // std::cout << "viX: " << viX.V << "," << viX.I << "\n";
+        // std::cout << "viY: " << viY.V << "," << viY.I << "\n";
+        // std::cout << "viZ: " << viZ.V << "," << viZ.I << "\n";
+        printf("px= %02X\n", px.Polarity);
+        printf("py= %02X\n", py.Polarity);
+        printf("pz= %02X\n", pz.Polarity);
+
 
         x1VIpub.publish(viX);
         x2VIpub.publish(viX);
         y1VIpub.publish(viY);
         y2VIpub.publish(viY);
         z1VIpub.publish(viZ);
-        z2VIpub.publish(viZ);
+        // z2VIpub.publish(viZ);
 
-        // x1VIpub.publish()
-        ros::spinOnce();
+        spinner.start();
         freq.sleep();
     }
 
+    // std::cout << "Yup. end of program is triggered\n";
     // trigger the poweroff trigger
+    // ros_coils::VI exitVI;
+    // exitVI.V = 0;
+    // exitVI.I = 0;
+    // x1VIpub.publish(exitVI);
+    // x2VIpub.publish(exitVI);
+    // ros::spinOnce();
+    // y1VIpub.publish(exitVI);
+    // y2VIpub.publish(exitVI);
+    // z1VIpub.publish(exitVI);
+    // z2VIpub.publish(exitVI);
+
     ros::ServiceClient shutdownClient = nh.serviceClient<std_srvs::Trigger>("powerOFF/X1");
     std_srvs::Trigger shutdownTrigger;
     shutdownClient.call(shutdownTrigger);

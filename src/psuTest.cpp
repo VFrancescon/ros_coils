@@ -103,7 +103,12 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
     else
     {
         ROS_INFO("PSU: %s. Setting V=%f, I=%f", this->nodeName.c_str(), msg.V, msg.I);
-        X1_->WriteVI( msg.V, msg.I);
+        if(this->nodeName == "/Z2"){
+            X1_->WriteVIGen2(msg.V, msg.I);
+        } else{
+            X1_->WriteVI( msg.V, msg.I);
+        }
+        
         this->currentV = msg.V;
         this->currentI = msg.I;
     }
@@ -111,18 +116,18 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
 
 void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
 {
+    if( this->nodeName == "/Z2" ){
+        return;
+    }
+
     if(msg.Polarity == this->currentPolarity){
         ROS_INFO("PSU: %s. PolarityChange. No need to act", this->nodeName.c_str());
         return;
     } else {
         ROS_INFO("PSU: %s. Setting polarity to %d",this->nodeName.c_str(), msg.Polarity);
         
-        if( this->nodeName == "/Z2" ){
-            ROS_INFO("Using GEN2");
-            X1_->setPolarityGen2(msg.Polarity);
-        } else {
-            X1_->setPolarity(msg.Polarity);
-        }
+        X1_->setPolarity(msg.Polarity);
+        
         this->currentPolarity = msg.Polarity;
     }
 }

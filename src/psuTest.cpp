@@ -164,5 +164,6 @@ int main(int argc, char **argv)
     spinner.start();
     PsuROSWrapper psu1(&nh);
 
-    ros::waitForShutdown();
+    spinner.stop();
+    ros::shutdown();
 }

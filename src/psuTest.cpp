@@ -1,10 +1,10 @@
 #include "psu/psuTest.hpp"
 
-// comment all X1_ lines from cli:
-//      sed -i '/X1_/ s/^/\/\//' file.txt
+// // //  comment all X1_ lines in vim:
+// // //  %s/X1_.*$/\/\/&/g
 
-// uncomment all X1_ lines from cli:
-//      sed -i '/X1_/ s/^\/\/\s*//' file.txt
+// // //  uncomment all X1_ lines in vim:
+// // //  %s/\/\/\(.*X1_.*\)/\1/g
 
 PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
 {
@@ -28,8 +28,8 @@ PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
     currentPolarity = 0x01;
     nodeName = ros::this_node::getName();
 
-    //X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
-    //X1_->PoCtrl(0x01);
+    X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
+    X1_->PoCtrl(0x01);
     ROS_INFO("Started PSU with port: %s, vConv %f and iConv %f",
              COM_PORT.c_str(), vConv, iConv);
 
@@ -64,7 +64,7 @@ void PsuROSWrapper::callbackCurrentWrite(const std_msgs::Float32 &msg)
     else
     {
         ROS_INFO("Setting Current to: %f", msg.data);
-        // //X1_->WriteCurrent(msg.data);
+         //X1_->WriteCurrent(msg.data);
         this->currentI = msg.data;
     }
 }
@@ -81,7 +81,7 @@ void PsuROSWrapper::callbackVoltageWrite(const std_msgs::Float32 &msg)
     else
     {
         ROS_INFO("Setting Voltage to: %f", msg.data);
-        // //X1_->WriteVoltage(msg.data);
+         //X1_->WriteVoltage(msg.data);
         this->currentV = msg.data;
     }
 }
@@ -110,9 +110,9 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
     {
         ROS_INFO("PSU: %s. Setting V=%f, I=%f", this->nodeName.c_str(), msg.V, msg.I);
         if(this->nodeName == "/Z2"){
-            //X1_->WriteVIGen2(msg.V, msg.I);
+            X1_->WriteVIGen2(msg.V, msg.I * -1);
         } else{
-            //X1_->WriteVI( msg.V, msg.I);
+            X1_->WriteVI( msg.V, msg.I);
         }
         
         this->currentV = msg.V;
@@ -132,7 +132,7 @@ void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
     } else {
         ROS_INFO("PSU: %s. Setting polarity to %d",this->nodeName.c_str(), msg.Polarity);
         
-        //X1_->setPolarity(msg.Polarity);
+        X1_->setPolarity(msg.Polarity);
         
         this->currentPolarity = msg.Polarity;
     }
@@ -141,7 +141,7 @@ void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
 bool PsuROSWrapper::callbackSetup(
     std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
 {
-    //X1_->PoCtrl(0x01);
+    X1_->PoCtrl(0x01);
     res.message = "Successfully setup.";
     res.success = true;
     return true;
@@ -150,7 +150,7 @@ bool PsuROSWrapper::callbackSetup(
 bool PsuROSWrapper::callbackShutdown(
     std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
 {
-    //X1_->PoCtrl(0x00);
+    X1_->PoCtrl(0x00);
     res.message = "Successfully setup.";
     res.success = true;
     return true;
@@ -160,10 +160,12 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "PSUTEST");
     ros::NodeHandle nh;
-    ros::AsyncSpinner spinner(2);
-    spinner.start();
+    // ros::AsyncSpinner spinner(2);
+    // spinner.start();
     PsuROSWrapper psu1(&nh);
 
-    spinner.stop();
-    ros::shutdown();
+    while(ros::ok()){
+        ros::spinOnce();
+    }
+
 }

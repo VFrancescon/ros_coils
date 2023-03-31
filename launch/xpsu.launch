@@ -1,0 +1,13 @@
+<launch>
+    <!-- X Supplies -->
+    <node name="X1" pkg="ros_coils" type="psuTest" output="screen">
+        <param name="PSU_COM" type="str" value="/dev/ttyUSB0"/>
+        <param name="vConv" type="double" value="0.1"/>
+    </node>
+    <node name="X2" pkg="ros_coils" type="psuTest" output="screen">
+        <param name="PSU_COM" type="str" value="/dev/ttyUSB1"/>
+        <param name="vConv" type="double" value="0.1"/>
+    </node>    
+    
+    <node name="Field" pkg="ros_coils" type="pubField" output="screen"> </node>
+</launch>

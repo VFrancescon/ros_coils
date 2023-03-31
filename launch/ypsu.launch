@@ -1,0 +1,13 @@
+<launch>
+    <!-- Y Supplies -->
+    <node name="Y1" pkg="ros_coils" type="psuTest" output="screen">
+        <param name="vConv" type="double" value="0.01"/>
+        <param name="PSU_COM" type="str" value="/dev/ttyUSB4"/>
+    </node>
+    <node name="Y2" pkg="ros_coils" type="psuTest" output="screen">
+        <param name="vConv" type="double" value="0.01"/>
+        <param name="PSU_COM" type="str" value="/dev/ttyUSB5"/>
+    </node>    
+
+    <node name="Field" pkg="ros_coils" type="pubField" output="screen"> </node>
+</launch>

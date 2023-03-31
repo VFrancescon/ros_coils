@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
     ros::Publisher z1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z1", 10);
     ros::Publisher z2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z2", 10);
 
-    ros::Publisher x1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X1", 1);
-    ros::Publisher x2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X2", 1);
-    ros::Publisher y1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y1", 1);
-    ros::Publisher y2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 1);
-    ros::Publisher z1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 1);
+    ros::Publisher x1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X1", 10);
+    ros::Publisher x2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X2", 10);
+    ros::Publisher y1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y1", 10);
+    ros::Publisher y2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 10);
+    ros::Publisher z1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 10);
     // ros::Publisher z2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z2", 10);
 
     ros_coils::Polarity px, py, pz;
@@ -128,6 +128,7 @@ int main(int argc, char *argv[])
         viX.I = abs(viX.I);
         viY.I = abs(viY.I);
         viZ1.I = abs(viZ1.I);
+        //z2 is unchanged
 
         viX.V = abs(viX.I);
         viY.V = abs(viY.I);

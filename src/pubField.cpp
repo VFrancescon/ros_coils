@@ -46,12 +46,12 @@ int main(int argc, char *argv[])
     // std_srvs::Trigger poweronTrigger;
     // poweronClient.call(poweronTrigger);
 
-    ros::Publisher x1VIpub = nh.advertise<ros_coils::VI>("/vi_control/X1", 1);
-    ros::Publisher x2VIpub = nh.advertise<ros_coils::VI>("/vi_control/X2", 1);
-    ros::Publisher y1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y1", 1);
-    ros::Publisher y2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y2", 1);
-    ros::Publisher z1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z1", 1);
-    // ros::Publisher z2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z2", 10);
+    ros::Publisher x1VIpub = nh.advertise<ros_coils::VI>("/vi_control/X1", 10);
+    ros::Publisher x2VIpub = nh.advertise<ros_coils::VI>("/vi_control/X2", 10);
+    ros::Publisher y1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y1", 10);
+    ros::Publisher y2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Y2", 10);
+    ros::Publisher z1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z1", 10);
+    ros::Publisher z2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z2", 10);
 
     ros::Publisher x1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X1", 1);
     ros::Publisher x2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X2", 1);
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     ros::AsyncSpinner spinner(6);
     ros::Rate freq(0.5);
-    ros_coils::VI viX, viY, viZ;
+    ros_coils::VI viX, viY, viZ1, viZ2;
 
     viX.I = 0.f;
     viX.V = 0.f;
@@ -75,14 +75,18 @@ int main(int argc, char *argv[])
     viY.I = 0.f;
     viY.V = 0.f;
 
-    viZ.I = 0.f;
-    viZ.V = 0.f;
+    viZ1.I = 0.f;
+    viZ1.V = 0.f;
+
+    viZ2.I = 0.f;
+    viZ2.V = 0.f;
 
     while (ros::ok())
     {
         viX.I = field.bx / field.cal_x;
         viY.I = field.by / field.cal_y;
-        viZ.I = field.bz / field.cal_z;
+        viZ1.I = field.bz / field.cal_z;
+        viZ2.I = field.bz / field.cal_z;
 
         if (viX.I < 0)
         {
@@ -96,7 +100,7 @@ int main(int argc, char *argv[])
         }
         else
             py.Polarity = 0x01;
-        if (viZ.I < 0)
+        if (viZ1.I < 0)
         {
             pz.Polarity = 0x00;
         }
@@ -123,26 +127,27 @@ int main(int argc, char *argv[])
         // }
         viX.I = abs(viX.I);
         viY.I = abs(viY.I);
-        viZ.I = abs(viZ.I);
+        viZ1.I = abs(viZ1.I);
 
-        viX.V = viX.I;
-        viY.V = viY.I;
-        viZ.V = viZ.I;
+        viX.V = abs(viX.I);
+        viY.V = abs(viY.I);
+        viZ1.V = abs(viZ1.I);
+        viZ2.V = abs(viZ2.I);
 
         // std::cout << "viX: " << viX.V << "," << viX.I << "\n";
         // std::cout << "viY: " << viY.V << "," << viY.I << "\n";
         // std::cout << "viZ: " << viZ.V << "," << viZ.I << "\n";
-        printf("px= %02X\n", px.Polarity);
-        printf("py= %02X\n", py.Polarity);
-        printf("pz= %02X\n", pz.Polarity);
+        // printf("px= %02X\n", px.Polarity);
+        // printf("py= %02X\n", py.Polarity);
+        // printf("pz= %02X\n", pz.Polarity);
 
 
         x1VIpub.publish(viX);
         x2VIpub.publish(viX);
         y1VIpub.publish(viY);
         y2VIpub.publish(viY);
-        z1VIpub.publish(viZ);
-        // z2VIpub.publish(viZ);
+        z1VIpub.publish(viZ1);
+        z2VIpub.publish(viZ2);
 
         spinner.start();
         freq.sleep();

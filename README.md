@@ -2,21 +2,63 @@
 
 Attempt at adapting [3d coils backend](https://github.com/vfrancescon/coil_manipulator) into a ROS node in my spare time.
 
-## Usage
+## Usage: Remote Host
 
-Clone this in your ros workspace and go ham.
+Follow these points on the host machine connected with the coils. This machine must clear the dependencies section.
+
+1. Clone the main branch in your ros workspace.
+
+2. Build messages and nodes.
+
+```bash
+catkin_make
+```
+
+3. Make sure the following are in your ~/.bashrc
+
+```bash
+source /opt/ros/noetic/setup.bash
+source ~/ros_ws/devel/setup.bash
+export ROS_IP=192.168.0.10
+export ROS_MASTER_URI=http://192.168.0.10:11311
+```
+
+4. Run the nodes
 
 ```bash
 roslaunch ros_coils middleware.launch
 ```
 
-Spins up all the psus as a separate node each.
+This spins up all the psus as a separate node each.
 
-PSU nodes have a [Voltage/Current interface](msg/VI.msg) and [Polarity interface](msg/Polarity.msg).
+## Usage: Local client
 
-Further, a middleware node is spun, with a [Magnetic Field Interface](msg/magField.msg), which is automatically translated to input msgs for each PSU node.
+Follow these points on the local machine you want to push fields with. This machine does not need to clear the dependencies section.
+
+1. Clone the RemoteMachine branch in your ros workspace.
+
+2. Build messages.
+
+```bash
+catkin_make
+```
+
+3. Make sure the following are in your ~/.bashrc
+
+```bash
+source /opt/ros/noetic/setup.bash
+source ~/ros_ws/devel/setup.bash
+export ROS_IP=192.168.0.15
+export ROS_MASTER_URI=http://192.168.0.10:11311
+```
+
+4. You should now be able to publish to the \field topic with no issues.
 
 ## Notes
+
+* PSU nodes have a [Voltage/Current interface](msg/VI.msg) and [Polarity interface](msg/Polarity.msg).
+
+* The middleware node is spun, with a [Magnetic Field Interface](msg/magField.msg), which is automatically translated to input msgs for each PSU node.
 
 * The Z2 PSU is unique in that it lacks a Polarity interface, that is normal and handled internally.
 

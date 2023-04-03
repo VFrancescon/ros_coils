@@ -24,27 +24,9 @@ void FieldPublisher::callbackField(const ros_coils::magField &msg)
 
 int main(int argc, char *argv[])
 {
-    // float bx = 10, by = 10, bz = 10;
-
-    // if(argc == 4){
-    //     bx = std::stof(argv[1]);
-    //     by = std::stof(argv[2]);
-    //     bz = std::stof(argv[3]);
-    // }
-
-    // float ix, iy, iz;
-
-    // ix = bx / cal_x;
-    // iy = by / cal_y;
-    // iz = bz / cal_z;
-
     ros::init(argc, argv, "FieldPub");
     ros::NodeHandle nh;
     FieldPublisher field(&nh);
-    // trigger the PSU power on service
-    // ros::ServiceClient poweronClient = nh.serviceClient<std_srvs::Trigger>("powerON/X1");
-    // std_srvs::Trigger poweronTrigger;
-    // poweronClient.call(poweronTrigger);
 
     ros::Publisher x1VIpub = nh.advertise<ros_coils::VI>("/vi_control/X1", 10);
     ros::Publisher x2VIpub = nh.advertise<ros_coils::VI>("/vi_control/X2", 10);
@@ -58,7 +40,6 @@ int main(int argc, char *argv[])
     ros::Publisher y1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y1", 10);
     ros::Publisher y2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 10);
     ros::Publisher z1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 10);
-    // ros::Publisher z2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z2", 10);
 
     ros_coils::Polarity px, py, pz;
     px.Polarity = 0x01;
@@ -107,24 +88,12 @@ int main(int argc, char *argv[])
         else
             pz.Polarity = 0x01;
 
-        // if (px.Polarity != xFlag)
-        // {
-            x1Polaritypub.publish(px);
-            x2Polaritypub.publish(px);
-             
-        // }
+        x1Polaritypub.publish(px);
+        x2Polaritypub.publish(px);
+        y1Polaritypub.publish(py);
+        y2Polaritypub.publish(py);
+        z1Polaritypub.publish(pz);
 
-        // if (py.Polarity != yFlag)
-        // {
-            y1Polaritypub.publish(py);
-            y2Polaritypub.publish(py);
-        // }
-
-        // if (pz.Polarity != zFlag)
-        // {
-            z1Polaritypub.publish(pz);
-            // z2Polaritypub.publish(pz);
-        // }
         viX.I = abs(viX.I);
         viY.I = abs(viY.I);
         viZ1.I = abs(viZ1.I);
@@ -142,7 +111,6 @@ int main(int argc, char *argv[])
         // printf("py= %02X\n", py.Polarity);
         // printf("pz= %02X\n", pz.Polarity);
 
-
         x1VIpub.publish(viX);
         x2VIpub.publish(viX);
         y1VIpub.publish(viY);
@@ -153,19 +121,6 @@ int main(int argc, char *argv[])
         spinner.start();
         freq.sleep();
     }
-
-    // std::cout << "Yup. end of program is triggered\n";
-    // trigger the poweroff trigger
-    // ros_coils::VI exitVI;
-    // exitVI.V = 0;
-    // exitVI.I = 0;
-    // x1VIpub.publish(exitVI);
-    // x2VIpub.publish(exitVI);
-    // ros::spinOnce();
-    // y1VIpub.publish(exitVI);
-    // y2VIpub.publish(exitVI);
-    // z1VIpub.publish(exitVI);
-    // z2VIpub.publish(exitVI);
 
     ros::ServiceClient shutdownClient = nh.serviceClient<std_srvs::Trigger>("powerOFF/X1");
     std_srvs::Trigger shutdownTrigger;

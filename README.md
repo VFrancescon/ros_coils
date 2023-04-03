@@ -4,13 +4,15 @@ Attempt at adapting [3d coils backend](https://github.com/vfrancescon/coil_manip
 
 ## Usage
 
-Clone this in your ros workspace and go ham.
+Clone the RemoteBrahch in your ros workspace, build to obtain the messages and go ham.
+
+Sample message:
 
 ```bash
-roslaunch ros_coils middleware.launch
+rostopic pub /field ros_coils/magField "bx: 10.0
+by: 0.0
+bz: 0.0" 
 ```
-
-Spins up all the psus as a separate node each.
 
 PSU nodes have a [Voltage/Current interface](msg/VI.msg) and [Polarity interface](msg/Polarity.msg).
 
@@ -26,7 +28,7 @@ Further, a middleware node is spun, with a [Magnetic Field Interface](msg/magFie
 
 ## Dependencies
 
-[3d coils backend](https://github.com/vfrancescon/coil_manipulator)
+[3d coils backend](https://github.com/vfrancescon/coil_manipulator). Only required to run the local branch.
 
 ## Author
 

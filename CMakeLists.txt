@@ -229,6 +229,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_executable(psuTest src/psuTest.cpp)
 add_executable(pubField src/pubField.cpp)
+add_executable(pubafield src/pubafield.cpp)
 target_link_libraries(psuTest ${catkin_LIBRARIES} ${PSULibs})
 target_link_libraries(pubField ${catkin_LIBRARIES} ${PSULibs})
-
+target_link_libraries(pubafield ${catkin_LIBRARIES})

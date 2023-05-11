@@ -41,9 +41,10 @@ int main(int argc, char *argv[])
     ros::Publisher y2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 10);
     ros::Publisher z1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 10);
 
-    ros_coils::Polarity px, py, pz;
+    ros_coils::Polarity px, py1, py2, pz;
     px.Polarity = 0x01;
-    py.Polarity = 0x01;
+    py1.Polarity = 0x01;
+    py2.Polarity = 0x00;
     pz.Polarity = 0x01;
 
     ros::AsyncSpinner spinner(6);
@@ -77,21 +78,26 @@ int main(int argc, char *argv[])
             px.Polarity = 0x01;
         if (viY.I < 0)
         {
-            py.Polarity = 0x00;
+            py1.Polarity = 0x00;
+            py2.Polarity = 0x01;
         }
         else
-            py.Polarity = 0x01;
+        {
+            py1.Polarity = 0x01;
+            py2.Polarity = 0x00;
+        }
         if (viZ1.I < 0)
         {
             pz.Polarity = 0x00;
         }
         else
+        {
             pz.Polarity = 0x01;
-
+        }
         x1Polaritypub.publish(px);
         x2Polaritypub.publish(px);
-        y1Polaritypub.publish(py);
-        y2Polaritypub.publish(py);
+        y1Polaritypub.publish(py1);
+        y2Polaritypub.publish(py2);
         z1Polaritypub.publish(pz);
 
         viX.I = abs(viX.I);

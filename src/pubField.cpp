@@ -1,29 +1,27 @@
 #include "pubField.hpp"
 
-FieldPublisher::FieldPublisher(ros::NodeHandle *nh)
-{
+FieldPublisher::FieldPublisher(ros::NodeHandle *nh) {
     // ROSPARAMS here
 
     // Variable initialisation here
 
     // Subscriber instantiation here
-    fieldSubscriber_ = nh->subscribe("field", 10, &FieldPublisher::callbackField, this);
+    fieldSubscriber_ =
+        nh->subscribe("field", 10, &FieldPublisher::callbackField, this);
     this->bx = 0;
     this->by = 0;
     this->bz = 0;
     // Publisher instantiation here
 }
 
-void FieldPublisher::callbackField(const ros_coils::magField &msg)
-{
+void FieldPublisher::callbackField(const ros_coils::magField &msg) {
     ROS_INFO("Field: %f, %f, %f", msg.bx, msg.by, msg.bz);
     this->bx = msg.bx;
     this->by = msg.by;
-    this->bz = msg.bz;
+    this->bz = msg.bz * -1;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     ros::init(argc, argv, "FieldPub");
     ros::NodeHandle nh;
     FieldPublisher field(&nh);
@@ -35,11 +33,16 @@ int main(int argc, char *argv[])
     ros::Publisher z1VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z1", 10);
     ros::Publisher z2VIpub = nh.advertise<ros_coils::VI>("/vi_control/Z2", 10);
 
-    ros::Publisher x1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X1", 10);
-    ros::Publisher x2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/X2", 10);
-    ros::Publisher y1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y1", 10);
-    ros::Publisher y2Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 10);
-    ros::Publisher z1Polaritypub = nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 10);
+    ros::Publisher x1Polaritypub =
+        nh.advertise<ros_coils::Polarity>("/polarity_control/X1", 10);
+    ros::Publisher x2Polaritypub =
+        nh.advertise<ros_coils::Polarity>("/polarity_control/X2", 10);
+    ros::Publisher y1Polaritypub =
+        nh.advertise<ros_coils::Polarity>("/polarity_control/Y1", 10);
+    ros::Publisher y2Polaritypub =
+        nh.advertise<ros_coils::Polarity>("/polarity_control/Y2", 10);
+    ros::Publisher z1Polaritypub =
+        nh.advertise<ros_coils::Polarity>("/polarity_control/Z1", 10);
 
     ros_coils::Polarity px, py1, py2, pz;
     px.Polarity = 0x01;
@@ -63,36 +66,31 @@ int main(int argc, char *argv[])
     viZ2.I = 0.f;
     viZ2.V = 0.f;
 
-    while (ros::ok())
-    {
+    while (ros::ok()) {
         viX.I = field.bx / field.cal_x;
         viY.I = field.by / field.cal_y;
         viZ1.I = field.bz / field.cal_z;
         viZ2.I = field.bz / field.cal_z;
 
-        if (viX.I < 0)
-        {
+        //Y1 = 0x01, Y2 = 0x00 -> positive
+        //Y1 = 0x00, Y2 = 0x01 -> negative
+
+        if (viX.I < 0) {
             px.Polarity = 0x00;
-        }
-        else
+        } else {
             px.Polarity = 0x01;
-        if (viY.I < 0)
-        {
+        }
+        if (viY.I < 0) {
             py1.Polarity = 0x00;
             py2.Polarity = 0x01;
-        }
-        else
-        {
+        } else {
             py1.Polarity = 0x01;
             py2.Polarity = 0x00;
         }
-        if (viZ1.I < 0)
-        {
-            pz.Polarity = 0x00;
-        }
-        else
-        {
+        if (viZ1.I < 0) {
             pz.Polarity = 0x01;
+        } else {
+            pz.Polarity = 0x00;
         }
         x1Polaritypub.publish(px);
         x2Polaritypub.publish(px);
@@ -103,12 +101,12 @@ int main(int argc, char *argv[])
         viX.I = abs(viX.I);
         viY.I = abs(viY.I);
         viZ1.I = abs(viZ1.I);
-        //z2 is unchanged
+        // z2 is unchanged
 
-        viX.V = abs(viX.I);
-        viY.V = abs(viY.I);
-        viZ1.V = abs(viZ1.I);
-        viZ2.V = abs(viZ2.I);
+        viX.V = abs(60);
+        viY.V = abs(viY.I) * 1.5;
+        viZ1.V = abs(viZ1.I) * 1.5;
+        viZ2.V = abs(viZ2.I) * 1.5;
 
         // std::cout << "viX: " << viX.V << "," << viX.I << "\n";
         // std::cout << "viY: " << viY.V << "," << viY.I << "\n";
@@ -128,7 +126,8 @@ int main(int argc, char *argv[])
         freq.sleep();
     }
 
-    ros::ServiceClient shutdownClient = nh.serviceClient<std_srvs::Trigger>("powerOFF/X1");
+    ros::ServiceClient shutdownClient =
+        nh.serviceClient<std_srvs::Trigger>("powerOFF/X1");
     std_srvs::Trigger shutdownTrigger;
     shutdownClient.call(shutdownTrigger);
 

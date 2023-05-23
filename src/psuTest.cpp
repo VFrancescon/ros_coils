@@ -110,9 +110,9 @@ void PsuROSWrapper::callbackVIWrite(const ros_coils::VI &msg)
     {
         ROS_INFO("PSU: %s. Setting V=%f, I=%f", this->nodeName.c_str(), msg.V, msg.I);
         if(this->nodeName == "/Z2"){
-            // X1_->WriteVIGen2(msg.V, msg.I * -1);
+            X1_->WriteVIGen2(60, msg.I);
         } else{
-            // X1_->WriteVI( msg.V, msg.I);
+            X1_->WriteVI( 60, msg.I);
         }
         
         this->currentV = msg.V;

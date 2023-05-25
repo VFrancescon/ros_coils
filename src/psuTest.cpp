@@ -28,8 +28,8 @@ PsuROSWrapper::PsuROSWrapper(ros::NodeHandle *nh)
     currentPolarity = 0x01;
     nodeName = ros::this_node::getName();
 
-    // X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
-    // X1_->PoCtrl(0x01);
+    X1_ = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
+    X1_->PoCtrl(0x01);
     ROS_INFO("Started PSU with port: %s, vConv %f and iConv %f",
              COM_PORT.c_str(), vConv, iConv);
 
@@ -132,7 +132,7 @@ void PsuROSWrapper::callbackPolarity(const ros_coils::Polarity &msg)
     } else {
         ROS_INFO("PSU: %s. Setting polarity to %d",this->nodeName.c_str(), msg.Polarity);
         
-        // X1_->setPolarity(msg.Polarity);
+        X1_->setPolarity(msg.Polarity);
         
         this->currentPolarity = msg.Polarity;
     }
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "PSUTEST");
     ros::NodeHandle nh;
-    // ros::AsyncSpinner spinner(2);
+    // // ros::AsyncSpinner spinner(2);
     // spinner.start();
     PsuROSWrapper psu1(&nh);
 

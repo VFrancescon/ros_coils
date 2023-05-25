@@ -11,24 +11,30 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "ReinforcementShowcase");
     ros::NodeHandle nh;
     ros::Publisher fieldPublisher = nh.advertise<ros_coils::magField>("/field", 10);
-    ros::Rate loop_rate(1);
+    ros::Rate loop_rate(0.5);
     int counter = 0;
-    int signFlag = -1;
+    int adder = 1;
     ros_coils::magField field;
+    field.by = 0;
+    field.bz = 0;
+        
 
+    // field = 0
+    // var = 1
+    // if (field == 20 ) var = -1
+    // if ( field == -20 ) var = 1
+    // field = field + var; 
 
     while ( ros::ok() )
     {
-        if( counter == 20){
-            counter = 0; 
-            signFlag *= -1;
-        }
+        if(counter == 20 ) adder = -1;
+        if(counter == -20 ) adder = 1;
+
+        counter = counter + adder;
         field.bx = counter;
-        field.by = 0;
-        field.bz = 0;
         fieldPublisher.publish(field);
         ros::spinOnce();
-        loop_rate.sleep();
+        loop_rate.sleep();;
     }
     
 

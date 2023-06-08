@@ -18,7 +18,7 @@ int main(int argc, char** argv){
 
     py1.Polarity = 0x01;
     py2.Polarity = 0x00;
-    ros::Rate loop_rate(3.5);
+    ros::Rate loop_rate(0.1);
 
     viY1.V = 40.f;
     viY2.V = 40.f;

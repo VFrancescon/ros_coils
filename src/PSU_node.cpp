@@ -20,7 +20,7 @@ PSU_node::PSU_node(ros::NodeHandle *nh) {
     currentV = 0.f;
     currentPolarity = 0x01;
     nodeName = ros::this_node::getName();
-
+    ROS_INFO("Debug mode: %s", debugMode ? "true" : "false");
     if (!debugMode) {
         PSU = std::make_unique<DXKDP_PSU>(COM_PORT, vConv, iConv);
     }
@@ -49,6 +49,9 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
         (int)this->currentI * 100;  // int casted value current held for I
     int adjMV = (int)msg.V * 100;   // int casted value message held for V
     int adjMI = (int)msg.I * 100;   // int casted value message held for I
+    // print out currentV and msg V 
+    ROS_INFO("Current V: %d, msg V: %d", adjCV, adjMV);
+    ROS_INFO("Current I: %d, msg I: %d", adjCI, adjMI);
     bool Vchange = adjCV == adjMV;
     bool Ichange = adjCI == adjMI;
 
@@ -60,7 +63,7 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                 ROS_INFO("%s: V: %f, I: %f", this->nodeName.c_str(), msg.V,
                          msg.I);
                 if (this->nodeName ==
-                    "PSU3") {  // funny gen2 call with polarity embedded
+                    "/PSU3") {  // funny gen2 call with polarity embedded
                     ROS_INFO("Gen2 call");
                     PSU->WriteVIGen2(msg.V, msg.I);
                 } else {  // gen1 call with explicit polarity call
@@ -68,6 +71,8 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                     PSU->WriteVI(msg.V, abs(msg.I));
                     PSU->setPolarity(msg.I > 0 ? 0x01 : 0x00);
                 }
+                this->currentI = msg.I;
+                this->currentV = msg.V;
             } else {  // no need to act
                 // ros_info no need to act
                 ROS_INFO("Input is the same as current Val");
@@ -80,11 +85,13 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                 ROS_INFO("%s: V: %f, I: %f", this->nodeName.c_str(), msg.V,
                          msg.I);
                 if (this->nodeName ==
-                    "PSU3") {  // funny gen2 call with polarity embedded
+                    "/PSU3") {  // funny gen2 call with polarity embedded
                     ROS_INFO("Gen2 call");
                 } else {  // gen1 call with explicit polarity call
                     ROS_INFO("Gen1 call");
                 }
+                this->currentI = msg.I;
+                this->currentV = msg.V;
             } else {
                 ROS_INFO("Input is the same as current Val");
             }

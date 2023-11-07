@@ -38,8 +38,13 @@ PSU_node::PSU_node(ros::NodeHandle *nh) {
     VI_sub_ = nh->subscribe("vi_control" + nodeName, 10,
                             &PSU_node::callbackVIWrite, this);
 
+    
+    if (!debugMode) {
+        PSU->PoCtrl(0x01);
+    }
     ROS_INFO("Started PSU with port: %s, vConv %f and iConv %f",
              COM_PORT.c_str(), vConv, iConv);
+
 }
 
 void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {

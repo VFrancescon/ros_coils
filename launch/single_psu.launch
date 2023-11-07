@@ -1,8 +1,8 @@
 <launch>
     <!-- X Supplies -->
     <node name="PSU0" pkg="ros_coils" type="PSU_node" output="screen">
-        <param name="PSU_COM" type="str" value="/dev/ttyUSB0"/>
-        <param name="vConv" type="double" value="0.1"/>
-        <param name="debugMode" type="bool" value="true"/> <!-- debugMode="true" -->
+        <param name="PSU_COM" type="str" value="/dev/ttyUSB2"/>
+        <param name="vConv" type="double" value="0.01"/>
+        <param name="debugMode" type="bool" value="false"/> <!-- debugMode="true" -->
     </node>
 </launch>

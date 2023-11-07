@@ -85,28 +85,27 @@ void FieldNode::field_to_vi() {
 
     for (size_t i = 0; i < xNum; i++) {
         vi_[i].I = ix;
-        vi_[i].V = (ix * 1.2 > 50) ? 50 : ix * 1.2;;
-        if (xNum == 1) {
+        vi_[i].V = abs((ix * 1.2 > 50) ? 50 : ix * 1.2);
+        // vi_[i].V = abs(ix);
+        if (xNum != 2) {
             vi_[i].V *= 1.2;
         }
-        vi_[i].V = abs(vi_[i].V);
-
     }
     for (size_t i = 0; i < yNum; i++) {
         vi_[i + xNum].I = iy;
-        vi_[i + xNum].V = (iy * 1.2 > 50) ? 50 : iy * 1.2;
-        if (yNum == 1) {
-            vi_[i].V *= 1.2;
+        vi_[i + xNum].V = abs((iy * 1.2 > 50) ? 50 : iy * 1.2);
+        // vi_[i + xNum].V = abs(iy);
+        if (yNum != 2) {
+            vi_[i + xNum].V *= 1.2;
         }
-        vi_[i].V = abs(vi_[i].V);
     }
     for (size_t i = 0; i < zNum; i++) {
         vi_[i + xNum + yNum].I = iz;
-        vi_[i + xNum + yNum].V = (iz * 1.2 > 50) ? 50 : iz * 1.2;
-        if (zNum == 1) {
-            vi_[i].V *= 1.2;
+        vi_[i + xNum + yNum].V = abs((iz * 1.2 > 50) ? 50 : iz * 1.2);
+        // vi_[i + xNum + yNum].V = abs(iz);
+        if (zNum != 2) {
+            vi_[i + xNum + yNum].V *= 1.2;
         }
-        vi_[i].V = abs(vi_[i].V);
     }
 }
 

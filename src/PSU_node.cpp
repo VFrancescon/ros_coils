@@ -64,10 +64,10 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                          msg.I);
                 if (this->nodeName ==
                     "/PSU3") {  // funny gen2 call with polarity embedded
-                    ROS_INFO("Gen2 call");
+                    // ROS_INFO("Gen2 call");
                     PSU->WriteVIGen2(msg.V, msg.I);
                 } else {  // gen1 call with explicit polarity call
-                    ROS_INFO("Gen1 call");
+                    // ROS_INFO("Gen1 call");
                     PSU->WriteVI(msg.V, abs(msg.I));
                     PSU->setPolarity(msg.I > 0 ? 0x01 : 0x00);
                 }

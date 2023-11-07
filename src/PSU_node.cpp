@@ -50,15 +50,15 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
     int adjMV = (int)msg.V * 100;   // int casted value message held for V
     int adjMI = (int)msg.I * 100;   // int casted value message held for I
     // print out currentV and msg V 
-    ROS_INFO("Current V: %d, msg V: %d", adjCV, adjMV);
-    ROS_INFO("Current I: %d, msg I: %d", adjCI, adjMI);
+    // ROS_INFO("Current V: %d, msg V: %d", adjCV, adjMV);
+    // ROS_INFO("Current I: %d, msg I: %d", adjCI, adjMI);
     bool Vchange = adjCV == adjMV;
     bool Ichange = adjCI == adjMI;
 
     bool stop_command = Vchange && Ichange;
 
-    switch (debugMode) {
-        case false:
+    switch (debugMode) { 
+        case false: //this branch executes if debugMode is false
             if (!stop_command) {
                 ROS_INFO("%s: V: %f, I: %f", this->nodeName.c_str(), msg.V,
                          msg.I);
@@ -75,12 +75,12 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                 this->currentV = msg.V;
             } else {  // no need to act
                 // ros_info no need to act
-                ROS_INFO("Input is the same as current Val");
+                // ROS_INFO("Input is the same as current Val");
                 return;
             }
             break;
 
-        default:
+        default: //this branch executes if debugMode is true
             if (!stop_command) {
                 ROS_INFO("%s: V: %f, I: %f", this->nodeName.c_str(), msg.V,
                          msg.I);
@@ -93,7 +93,7 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                 this->currentI = msg.I;
                 this->currentV = msg.V;
             } else {
-                ROS_INFO("Input is the same as current Val");
+                // ROS_INFO("Input is the same as current Val");
             }
 
             break;

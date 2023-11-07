@@ -235,6 +235,7 @@ add_executable(y_grads src/yGrads.cpp)
 add_executable(grad_node src/grad_node.cpp)
 add_executable( reinforcement_demo src/reinforcement_demos.cpp)
 add_executable(PSU_node src/PSU_node.cpp)
+add_executable(FieldNode src/FieldNode.cpp)
 
 
 target_link_libraries(psuTest ${catkin_LIBRARIES} ${PSULibs})
@@ -244,3 +245,4 @@ target_link_libraries(pubafield ${catkin_LIBRARIES})
 target_link_libraries(grad_node ${catkin_LIBRARIES} ${PSULibs})
 target_link_libraries( reinforcement_demo ${catkin_LIBRARIES} )
 target_link_libraries(PSU_node ${catkin_LIBRARIES} ${PSULibs})
+target_link_libraries(FieldNode ${catkin_LIBRARIES})

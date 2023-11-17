@@ -40,3 +40,8 @@ int main(int argc, char** argv){
 
     return 0;
 }
+
+/**
+ * @todo: rewrite this to work with the new field message 
+ * 
+ */

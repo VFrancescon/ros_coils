@@ -40,8 +40,8 @@
         <param name="yNum" type="int" value="2"/>
         <param name="zNum" type="int" value="1"/>
         <param name="xRoot" type="str" value="/PSU2"/>
-        <param name="zRoot" type="str" value="/PSU1"/>
         <param name="yRoot" type="str" value="/PSU4"/>
+        <param name="zRoot" type="str" value="/PSU1"/>
     </node>
 
 </launch>

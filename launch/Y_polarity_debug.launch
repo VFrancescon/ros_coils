@@ -11,7 +11,6 @@
         <param name="debugMode" type="bool" value="false"/> <!-- debugMode="true" -->
     </node>
 
-    <!-- todo: replace this with a debug node for Y polarity. -->
     <node name ="yPolarityDebug" pkg="ros_coils" type="yPolarityDebug" output="screen">
         <param name="yRoot" type="str" value="/PSU4"/>
     </node>

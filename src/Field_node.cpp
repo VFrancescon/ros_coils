@@ -98,7 +98,7 @@ void FieldNode::field_to_vi() {
         if (yNum != 2) {
             vi_[i + xNum].V *= 1.2;
         }
-        if(i == 0) vi_[i + xNum].I *= -1;
+        // if(i == 0) vi_[i + xNum].I *= -1;
     }
     for (size_t i = 0; i < zNum; i++) {
         vi_[i + xNum + yNum].I = iz;

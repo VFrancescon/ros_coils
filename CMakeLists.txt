@@ -231,10 +231,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_executable( reinforcement_demo src/reinforcement_demos.cpp)
 add_executable(PSU_node src/PSU_node.cpp)
 add_executable(Field_node src/Field_node.cpp)
-add_executable(yPolarityDebug src/yPolarityDebug.cpp)
 
 
 target_link_libraries( reinforcement_demo ${catkin_LIBRARIES} )
 target_link_libraries(PSU_node ${catkin_LIBRARIES} ${PSULibs})
 target_link_libraries(Field_node ${catkin_LIBRARIES})
-target_link_libraries(yPolarityDebug ${catkin_LIBRARIES})

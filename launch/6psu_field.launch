@@ -35,13 +35,13 @@
         <param name="debugMode" type="bool" value="false"/> <!-- debugMode="false" -->
     </node>
     
-    <node name ="Field" pkg="ros_coils" type="FieldNode" output="screen">
+    <node name ="Field" pkg="ros_coils" type="Field_node" output="screen">
         <param name="xNum" type="int" value="2"/>
-        <param name="yNum" type="int" value="2"/>
-        <param name="zNum" type="int" value="1"/>
+        <param name="yNum" type="int" value="1"/>
+        <param name="zNum" type="int" value="2"/>
         <param name="xRoot" type="str" value="/PSU2"/>
-        <param name="yRoot" type="str" value="/PSU4"/>
-        <param name="zRoot" type="str" value="/PSU1"/>
+        <param name="yRoot" type="str" value="/PSU1"/>
+        <param name="zRoot" type="str" value="/PSU4"/>
     </node>
 
 </launch>

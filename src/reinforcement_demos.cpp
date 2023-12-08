@@ -27,8 +27,8 @@ int main(int argc, char** argv){
 
     while ( ros::ok() )
     {
-        if(counter == 20 ) adder = -1;
-        if(counter == -20 ) adder = 1;
+        if(counter == 15 ) adder = -1;
+        if(counter == -15 ) adder = 1;
 
         counter = counter + adder;
         field.bx = counter;

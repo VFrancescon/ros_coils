@@ -74,7 +74,7 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                 } else {  // gen1 call with explicit polarity call
                     // ROS_INFO("Gen1 call");
                     PSU->WriteVI(msg.V, abs(msg.I));
-                    if(this->nodeName == "/PSU5") PSU->setPolarity(msg.I > 0 ? 0x01 : 0x00);
+                    if(this->nodeName == "/PSU5") PSU->setPolarity(msg.I > 0 ? 0x00 : 0x01);
                     else PSU->setPolarity(msg.I > 0 ? 0x01 : 0x00);
                 }
                 this->currentI = msg.I;

@@ -2,11 +2,11 @@
 #define FIELD_NODE_HPP
 #include <ros/ros.h>
 #include <std_srvs/Trigger.h>
+#include <ros/exception.h>
 
 #include <memory>
 #include <sstream>
 #include <vector>
-
 #include "ros_coils/VI.h"
 #include "ros_coils/magField.h"
 
@@ -41,15 +41,28 @@ class FieldNode {
     FieldNode(ros::NodeHandle *nh);
     void callbackField(const ros_coils::magField &msg);
 
-    float cal_x = 0.53;  //!< Bx calibration factor. Units are mT/A
+    float cal_x = 0.542;  //!< Bx calibration factor. Units are mT/A
     float cal_y = 1.07;  //!< By calibration factor. Units are mT/A
-    float cal_z = 0.62;  //!< Bz calibration factor. Units are mT/A
-    float ix, iy, iz;
-    float bx, by, bz;
+    float cal_z = 0.633;  //!< Bz calibration factor. Units are mT/A
+    float ix = 0, iy = 0, iz = 0;
+    float bx = 0, by = 0, bz = 0;
+    int maxField = 20;
+    int maxChange =
+        15;  //!< Maximum change in current allowed per cycle. Units are A
     std::vector<std::string> allAddress;
     std::vector<ros_coils::VI> vi_;
-
 };
 
+namespace ros_coils {
+    class ChangeException : public ros::Exception {
+       public:
+        ChangeException(const std::string &message) : ros::Exception(message) {}
+    };
+    class maxFieldException : public ros::Exception {
+       public:
+        maxFieldException(const std::string &message)
+            : ros::Exception(message) {}
+    };
+}
 
 #endif  // FIELD_NODE_HPP

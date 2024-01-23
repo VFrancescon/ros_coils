@@ -2,27 +2,27 @@
 
 FieldNode::FieldNode(ros::NodeHandle *nh) {
     // ROSPARAMS here
-    if (!ros::param::get("~xNum", xNum)) {  // number of PSU for X axis
+    if (!ros::param::get("~xNum", xNum)) {  // number of. PSU for X axis
         this->xNum = 2;
     }
 
-    if (!ros::param::get("~yNum", yNum)) {  // number of PSU for Y axis
+    if (!ros::param::get("~yNum", yNum)) {  // number of. PSU for Y axis
         this->yNum = 2;
     }
 
-    if (!ros::param::get("~zNum", zNum)) {  // number of PSU for Z axis
+    if (!ros::param::get("~zNum", zNum)) {  // number of. PSU for Z axis
         this->zNum = 2;
     }
 
-    if (!ros::param::get("~xRoot", xRoot)) {  // first address of PSU for X axis
+    if (!ros::param::get("~xRoot", xRoot)) {  // first address of. PSU for X axis
         this->xRoot = "/PSU0";
     }
 
-    if (!ros::param::get("~yRoot", yRoot)) {  // first address of PSU for Y axis
+    if (!ros::param::get("~yRoot", yRoot)) {  // first address of. PSU for Y axis
         this->yRoot = "/PSU4";
     }
 
-    if (!ros::param::get("~zRoot", zRoot)) {  // first address of PSU for Z axis
+    if (!ros::param::get("~zRoot", zRoot)) {  // first address of. PSU for Z axis
         this->zRoot = "/PSU2";
     }
 
@@ -68,6 +68,45 @@ FieldNode::FieldNode(ros::NodeHandle *nh) {
 
 void FieldNode::callbackField(const ros_coils::magField &msg) {
     ROS_INFO("Field: %f, %f, %f", msg.bx, msg.by, msg.bz);
+
+    try {
+        bool bx_change = abs(msg.bx - this->bx) > this->maxChange;
+        bool by_change = abs(msg.by - this->by) > this->maxChange;
+        bool bz_change = abs(msg.bz - this->bz) > this->maxChange;
+        if (bx_change) {
+            throw ros_coils::ChangeException(
+                "Change in x field exceeds boundary of 15mT, exiting. Please restart the "
+                "node");
+        }
+        if (by_change) {
+            throw ros_coils::ChangeException(
+                "Change in y field  exceeds boundary of 15mT, exiting. Please restart the node");
+        }
+        if (bz_change) {
+            throw ros_coils::ChangeException(
+                "Change in z field  exceeds boundary of 15mT, exiting. Please restart the node");
+        }
+        if(abs(msg.bx) > this->maxField){
+            throw ros_coils::maxFieldException(
+                "Field in x axis  exceeds boundary of 22mT, exiting. Please restart the node");
+        }
+        if(abs(msg.by) > this->maxField){
+            throw ros_coils::maxFieldException(
+                "Field in y axis  exceeds boundary of 22mT, exiting. Please restart the node");
+        }
+        if(abs(msg.bz) > this->maxField){
+            throw ros_coils::maxFieldException(
+                "Field in z axis exceeds boundary of 22mT, exiting. Please restart the node");
+        }
+    } catch (ros_coils::ChangeException &e) {
+        ROS_ERROR("ChangeException: %s", e.what());
+        ros::shutdown();
+    } catch (ros_coils::maxFieldException &e) {
+        ROS_ERROR("maxFieldException: %s", e.what());
+        ros::shutdown();
+    }
+
+
     this->bx = msg.bx;
     this->by = msg.by;
     this->bz = msg.bz;
@@ -75,7 +114,7 @@ void FieldNode::callbackField(const ros_coils::magField &msg) {
 }
 
 /**
- * @brief uses self.bx, self.by, self.bz to populate self.vi_
+ * @brief uses self.bx, self.by, self.bz to. Populate self.vi_
  *
  */
 void FieldNode::field_to_vi() {
@@ -122,7 +161,7 @@ int main(int argc, char *argv[]) {
     std::vector<ros::Publisher> viPub_;
     std::vector<ros_coils::VI> vi_(advNum);
     viPub_.resize(advNum);
-    // Publisher instantiation here
+    //. Publisher instantiation here
     for (size_t i = 0; i < advNum; i++) {
         viPub_[i] = nh.advertise<ros_coils::VI>(allAddress[i], 10);
     }

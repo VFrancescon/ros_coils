@@ -3,6 +3,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
 #include <std_srvs/Trigger.h>
+#include <ros/exception.h>
 
 #include <DxkdpLib/DxkdpLib.hpp>
 #include <memory>
@@ -25,7 +26,11 @@ class PSU_node {
     float vConv, iConv;       // minimum psu increment for voltage and current.
     uint8_t currentPolarity;  // currently stored polarity
     std::string nodeName;     // node name. Equal to PSU name.
+    int RatedV = 50;          // PSU rated voltage
+    int RatedI = 30;          // PSU rated current
 
+    float vLimit;
+    float iLimit;
     bool debugMode = true;  // debug flag. If true, PSU is never instantiated
                             // and function calls are empty
    public:
@@ -55,6 +60,18 @@ bool compare_float(float x, float y, float epsilon = 0.01f) {
         return true;
     }                  // they are same}
     { return false; }  // they are not same}
+}
+
+namespace psuExceptions {
+    class OverCurrent : public ros::Exception {
+       public:
+        OverCurrent(const std::string &message) : ros::Exception(message) {}
+    };
+
+    class OverVoltage : public ros::Exception {
+       public:
+        OverVoltage(const std::string &message) : ros::Exception(message) {}
+    };
 }
 
 #endif

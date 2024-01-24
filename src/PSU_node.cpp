@@ -12,9 +12,18 @@ PSU_node::PSU_node(ros::NodeHandle *nh) {
     if (!ros::param::get("~iConv", iConv)) {
         iConv = 0.01f;
     }
-    if(!ros::param::get("~debugMode", debugMode)){
+    if (!ros::param::get("~debugMode", debugMode)) {
         debugMode = true;
     }
+
+    if (!ros::param::get("~RatedV", RatedV)) {
+        RatedV = 50;
+    }
+    if (!ros::param::get("~RatedI", RatedI)) {
+        RatedI = 30;
+    }
+    vLimit = RatedV * 0.7;
+    iLimit = RatedI * 0.7;
 
     currentI = 0.f;
     currentV = 0.f;
@@ -38,23 +47,40 @@ PSU_node::PSU_node(ros::NodeHandle *nh) {
     VI_sub_ = nh->subscribe("vi_control" + nodeName, 10,
                             &PSU_node::callbackVIWrite, this);
 
-    
     if (!debugMode) {
         PSU->PoCtrl(0x01);
     }
     ROS_INFO("Started PSU with port: %s, vConv %f and iConv %f",
              COM_PORT.c_str(), vConv, iConv);
-
 }
 
 void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
+    try {
+        if (msg.V > vLimit)
+            throw psuExceptions::OverVoltage("Over voltage limit");
+        if (msg.I > iLimit)
+            throw psuExceptions::OverCurrent("Over current limit");
+    } catch (psuExceptions::OverVoltage) {
+        std::string outputBuff = this->nodeName +
+                                 ": requested V: " + std::to_string(msg.V) +
+                                 "V exceeds limit of " + std::to_string(vLimit) +
+                                 " Over voltage limit";
+        throw(ros::Exception(outputBuff));
+    } catch (psuExceptions::OverCurrent) {
+        std::string outputBuff = this->nodeName +
+                                 ": requested I: " + std::to_string(msg.I) +
+                                 "A exceeds limit of " + std::to_string(iLimit) +
+                                 " Over current limit";
+        throw(ros::Exception(outputBuff));
+    }
+
     int adjCV =
         (int)this->currentV * 100;  // int casted value current held for V
     int adjCI =
         (int)this->currentI * 100;  // int casted value current held for I
     int adjMV = (int)msg.V * 100;   // int casted value message held for V
     int adjMI = (int)msg.I * 100;   // int casted value message held for I
-    // print out currentV and msg V 
+    // print out currentV and msg V
     // ROS_INFO("Current V: %d, msg V: %d", adjCV, adjMV);
     // ROS_INFO("Current I: %d, msg I: %d", adjCI, adjMI);
     bool Vchange = adjCV == adjMV;
@@ -62,8 +88,8 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
 
     bool stop_command = Vchange && Ichange;
 
-    switch (debugMode) { 
-        case false: //this branch executes if debugMode is false
+    switch (debugMode) {
+        case false:  // this branch executes if debugMode is false
             if (!stop_command) {
                 ROS_INFO("%s: V: %f, I: %f", this->nodeName.c_str(), msg.V,
                          msg.I);
@@ -74,8 +100,10 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
                 } else {  // gen1 call with explicit polarity call
                     // ROS_INFO("Gen1 call");
                     PSU->WriteVI(msg.V, abs(msg.I));
-                    if(this->nodeName == "/PSU5") PSU->setPolarity(msg.I > 0 ? 0x00 : 0x01);
-                    else PSU->setPolarity(msg.I > 0 ? 0x01 : 0x00);
+                    if (this->nodeName == "/PSU5")
+                        PSU->setPolarity(msg.I > 0 ? 0x00 : 0x01);
+                    else
+                        PSU->setPolarity(msg.I > 0 ? 0x01 : 0x00);
                 }
                 this->currentI = msg.I;
                 this->currentV = msg.V;
@@ -86,7 +114,7 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
             }
             break;
 
-        default: //this branch executes if debugMode is true
+        default:  // this branch executes if debugMode is true
             if (!stop_command) {
                 ROS_INFO("%s: V: %f, I: %f", this->nodeName.c_str(), msg.V,
                          msg.I);
@@ -127,15 +155,14 @@ bool PSU_node::callbackShutdown(std_srvs::Trigger::Request &req,
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     ros::init(argc, argv, "PSUTEST");
     ros::NodeHandle nh;
     // // ros::AsyncSpinner spinner(2);
     // spinner.start();
     PSU_node psu(&nh);
 
-    while(ros::ok()){
+    while (ros::ok()) {
         ros::spinOnce();
     }
 }

@@ -60,6 +60,9 @@ export ROS_MASTER_URI=http://192.168.0.10:11311
 
 * Each PSU node has a ROS Param "debug", to be used to omit all Serial calls to PSU.
 
+* V/I limits are set at 70% of each supply's rated values. Those can be set as ROS Params.
+See [6PSU + Field](launch/6psu_field.launch) example for usage.
+
 * The middleware node is spun, with a [Magnetic Field Interface](msg/magField.msg), which is automatically translated to input msgs for each PSU node.
 
 * The [Field Node](src/Field_node.cpp), takes ROS Params x/y/z/Num and x/y/z/Root.

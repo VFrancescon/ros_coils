@@ -14,15 +14,18 @@ FieldNode::FieldNode(ros::NodeHandle *nh) {
         this->zNum = 2;
     }
 
-    if (!ros::param::get("~xRoot", xRoot)) {  // first address of. PSU for X axis
+    if (!ros::param::get("~xRoot",
+                         xRoot)) {  // first address of. PSU for X axis
         this->xRoot = "/PSU0";
     }
 
-    if (!ros::param::get("~yRoot", yRoot)) {  // first address of. PSU for Y axis
+    if (!ros::param::get("~yRoot",
+                         yRoot)) {  // first address of. PSU for Y axis
         this->yRoot = "/PSU4";
     }
 
-    if (!ros::param::get("~zRoot", zRoot)) {  // first address of. PSU for Z axis
+    if (!ros::param::get("~zRoot",
+                         zRoot)) {  // first address of. PSU for Z axis
         this->zRoot = "/PSU2";
     }
 
@@ -75,28 +78,34 @@ void FieldNode::callbackField(const ros_coils::magField &msg) {
         bool bz_change = abs(msg.bz - this->bz) > this->maxChange;
         if (bx_change) {
             throw ros_coils::ChangeException(
-                "Change in x field exceeds boundary of 15mT, exiting. Please restart the "
+                "Change in x field exceeds boundary of 15mT, exiting. Please "
+                "restart the "
                 "node");
         }
         if (by_change) {
             throw ros_coils::ChangeException(
-                "Change in y field  exceeds boundary of 15mT, exiting. Please restart the node");
+                "Change in y field  exceeds boundary of 15mT, exiting. Please "
+                "restart the node");
         }
         if (bz_change) {
             throw ros_coils::ChangeException(
-                "Change in z field  exceeds boundary of 15mT, exiting. Please restart the node");
+                "Change in z field  exceeds boundary of 15mT, exiting. Please "
+                "restart the node");
         }
-        if(abs(msg.bx) > this->maxField){
+        if (abs(msg.bx) > this->maxField) {
             throw ros_coils::maxFieldException(
-                "Field in x axis  exceeds boundary of 22mT, exiting. Please restart the node");
+                "Field in x axis  exceeds boundary of 22mT, exiting. Please "
+                "restart the node");
         }
-        if(abs(msg.by) > this->maxField){
+        if (abs(msg.by) > this->maxField) {
             throw ros_coils::maxFieldException(
-                "Field in y axis  exceeds boundary of 22mT, exiting. Please restart the node");
+                "Field in y axis  exceeds boundary of 22mT, exiting. Please "
+                "restart the node");
         }
-        if(abs(msg.bz) > this->maxField){
+        if (abs(msg.bz) > this->maxField) {
             throw ros_coils::maxFieldException(
-                "Field in z axis exceeds boundary of 22mT, exiting. Please restart the node");
+                "Field in z axis exceeds boundary of 22mT, exiting. Please "
+                "restart the node");
         }
     } catch (ros_coils::ChangeException &e) {
         ROS_ERROR("ChangeException: %s", e.what());
@@ -105,7 +114,6 @@ void FieldNode::callbackField(const ros_coils::magField &msg) {
         ROS_ERROR("maxFieldException: %s", e.what());
         ros::shutdown();
     }
-
 
     this->bx = msg.bx;
     this->by = msg.by;
@@ -124,7 +132,7 @@ void FieldNode::field_to_vi() {
 
     for (size_t i = 0; i < xNum; i++) {
         vi_[i].I = ix;
-        vi_[i].V = std::min((abs(ix)<3?ix*1.6:ix*1.2),50.0);
+        vi_[i].V = std::min((abs(ix) < 3 ? ix * 1.6 : ix * 1.2), 50.0);
         // vi_[i].V = abs(ix);
         if (xNum != 2) {
             vi_[i].V *= 1.2;
@@ -132,7 +140,7 @@ void FieldNode::field_to_vi() {
     }
     for (size_t i = 0; i < yNum; i++) {
         vi_[i + xNum].I = iy;
-        vi_[i + xNum].V = std::min((abs(ix)<3?ix*1.6:ix*1.2),50.0);
+        vi_[i + xNum].V = std::min((abs(ix) < 3 ? ix * 1.6 : ix * 1.2), 50.0);
         // vi_[i + xNum].V = abs(iy);
         if (yNum != 2) {
             vi_[i + xNum].V *= 1.2;
@@ -141,7 +149,8 @@ void FieldNode::field_to_vi() {
     }
     for (size_t i = 0; i < zNum; i++) {
         vi_[i + xNum + yNum].I = iz;
-        vi_[i + xNum + yNum].V = std::min((abs(iz)<3?iz*1.6:iz*1.2),50.0);
+        vi_[i + xNum + yNum].V =
+            std::min((abs(iz) < 3 ? iz * 1.6 : iz * 1.2), 50.0);
         // vi_[i + xNum + yNum].V = abs(iz);
         if (zNum != 2) {
             vi_[i + xNum + yNum].V *= 1.2;

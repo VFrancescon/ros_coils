@@ -124,7 +124,7 @@ void FieldNode::field_to_vi() {
 
     for (size_t i = 0; i < xNum; i++) {
         vi_[i].I = ix;
-        vi_[i].V = std::min((abs(ix)<3?ix*1.6:ix*1.2),50.0);
+        vi_[i].V = std::min((abs(ix)<3?ix*1.8:ix*1.2),50.0);
         // vi_[i].V = abs(ix);
         if (xNum != 2) {
             vi_[i].V *= 1.2;
@@ -132,7 +132,7 @@ void FieldNode::field_to_vi() {
     }
     for (size_t i = 0; i < yNum; i++) {
         vi_[i + xNum].I = iy;
-        vi_[i + xNum].V = std::min((abs(ix)<3?ix*1.6:ix*1.2),50.0);
+        vi_[i + xNum].V = std::min((abs(ix)<3?ix*1.8:ix*1.2),50.0);
         // vi_[i + xNum].V = abs(iy);
         if (yNum != 2) {
             vi_[i + xNum].V *= 1.2;
@@ -141,7 +141,7 @@ void FieldNode::field_to_vi() {
     }
     for (size_t i = 0; i < zNum; i++) {
         vi_[i + xNum + yNum].I = iz;
-        vi_[i + xNum + yNum].V = std::min((abs(iz)<3?iz*1.6:iz*1.2),50.0);
+        vi_[i + xNum + yNum].V = std::min((abs(iz)<3?iz*1.8:iz*1.2),50.0);
         // vi_[i + xNum + yNum].V = abs(iz);
         if (zNum != 2) {
             vi_[i + xNum + yNum].V *= 1.2;

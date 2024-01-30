@@ -1,6 +1,6 @@
 # ROS Node for 3D coils
 
-Attempt at adapting [3d coils backend](https://github.com/vfrancescon/coil_manipulator) into a ROS node in my spare time.
+Attempt at adapting [3d coils backend](https://github.com/vfrancescon/coil_libs) into a ROS node in my spare time.
 
 ## Usage: Remote Host
 

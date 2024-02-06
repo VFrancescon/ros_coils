@@ -58,7 +58,7 @@ void PSU_node::callbackVIWrite(const ros_coils::VI &msg) {
     try {
         if (msg.V > vLimit)
             throw psuExceptions::OverVoltage("Over voltage limit");
-        if (msg.I > iLimit)
+        if (abs(msg.I) > iLimit)
             throw psuExceptions::OverCurrent("Over current limit");
     } catch (psuExceptions::OverVoltage) {
         std::string outputBuff = this->nodeName +

@@ -7,13 +7,13 @@
         <param name="RatedI" type="int" value="50"/>
         <param name="debugMode" type="bool" value="true"/> 
     </node> -->
-    <node name="PSU1" pkg="ros_coils" type="PSU_node" output="screen">
+    <!-- <node name="PSU1" pkg="ros_coils" type="PSU_node" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB1"/>
         <param name="vConv" type="double" value="0.1"/>
         <param name="RatedV" type="int" value="60"/>
         <param name="RatedI" type="int" value="50"/>
         <param name="debugMode" type="bool" value="true"/> 
-    </node>
+    </node> -->
 
     <!-- Z Supplies -->
     <node name="PSU2" pkg="ros_coils" type="PSU_node" output="screen">
@@ -39,13 +39,13 @@
         <param name="RatedI" type="int" value="30"/>
         <param name="debugMode" type="bool" value="true"/> 
     </node>
-    <node name="PSU5" pkg="ros_coils" type="PSU_node" output="screen">
+    <!-- <node name="PSU5" pkg="ros_coils" type="PSU_node" output="screen">
         <param name="vConv" type="double" value="0.01"/>
         <param name="PSU_COM" type="str" value="/dev/ttyUSB5"/>
         <param name="RatedV" type="int" value="50"/>
         <param name="RatedI" type="int" value="30"/>
         <param name="debugMode" type="bool" value="true"/> 
-    </node>
+    </node> -->
     
     <node name ="Field" pkg="ros_coils" type="Field_node" output="screen">
         <param name="xNum" type="int" value="2"/>

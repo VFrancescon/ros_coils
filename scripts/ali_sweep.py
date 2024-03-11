@@ -6,7 +6,7 @@ if __name__ == '__main__':
     rospy.init_node('ali_sweep', anonymous=False)
 
     base_fieldPub = rospy.Publisher('/field', magField, queue_size=1)
-    rate = rospy.Rate(0.25) # 0.25hz
+    rate = rospy.Rate(1/8) # 0.125 Hz
     base_field = magField()
     base_field.bx = -5
     base_field.by = 0

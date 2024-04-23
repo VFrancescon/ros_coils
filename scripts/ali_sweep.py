@@ -12,6 +12,7 @@ if __name__ == '__main__':
     base_field.bx = -5
     base_field.by = 0
     base_field.bz = 0
+    base_field.header.stamp = rospy.Time.now()
     sign = 2.5
     base_fieldPub.publish(base_field)
     rospy.sleep(2.0)

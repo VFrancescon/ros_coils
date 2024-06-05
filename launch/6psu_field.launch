@@ -1,19 +1,19 @@
 <launch>
     <!-- X Supplies -->
-    <!-- <node name="PSU0" pkg="ros_coils" type="PSU_node" output="screen">
+    <node name="PSU0" pkg="ros_coils" type="PSU_node" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB0"/>
         <param name="vConv" type="double" value="0.1"/>
-        <param name="RatedV" type="int" value="60"/>
+        <param name="RatedV" type="int" value="80"/>
         <param name="RatedI" type="int" value="50"/>
         <param name="debugMode" type="bool" value="false"/> 
-    </node> -->
-    <!-- <node name="PSU1" pkg="ros_coils" type="PSU_node" output="screen">
+    </node>
+    <node name="PSU1" pkg="ros_coils" type="PSU_node" output="screen">
         <param name="PSU_COM" type="str" value="/dev/ttyUSB1"/>
         <param name="vConv" type="double" value="0.1"/>
-        <param name="RatedV" type="int" value="60"/>
+        <param name="RatedV" type="int" value="80"/>
         <param name="RatedI" type="int" value="50"/>
         <param name="debugMode" type="bool" value="false"/> 
-    </node> -->
+    </node>
 
     <!-- Z Supplies -->
     <node name="PSU2" pkg="ros_coils" type="PSU_node" output="screen">
@@ -50,7 +50,7 @@
     <node name ="Field" pkg="ros_coils" type="Field_node" output="screen">
         <param name="xNum" type="int" value="2"/>
         <param name="yNum" type="int" value="1"/>
-        <param name="zNum" type="int" value="1"/>
+        <param name="zNum" type="int" value="2"/>
         <param name="xRoot" type="str" value="/PSU2"/>
         <param name="yRoot" type="str" value="/PSU4"/>
         <param name="zRoot" type="str" value="/PSU0"/>

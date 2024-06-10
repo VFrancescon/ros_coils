@@ -1,0 +1,6 @@
+<launch>
+<!-- X Supplies -->
+    <include file="$(find ros_coils)/launch/6psu_field.launch"/>
+
+    <node name = "test_transitions" pkg="ros_coils" type="test_transitions.py" output="screen"> </node>
+</launch>

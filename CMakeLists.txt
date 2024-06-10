@@ -169,6 +169,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/ali_sweep.py
   scripts/input_field.py
+  scripts/test_transitions.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

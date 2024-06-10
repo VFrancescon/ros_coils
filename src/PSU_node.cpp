@@ -99,11 +99,17 @@ void PSU_node::callbackVIWrite(const ros_coils::VI& msg) {
                 if (this->nodeName ==
                     "/PSU3") {  // funny gen2 call with polarity embedded
                     // ROS_INFO("Gen2 call");
-                    PSU->WriteVIGen2(msg.V, msg.I);
+                    PSU->WriteVIGen2(msg.V, -msg.I);
                 } else {  // gen1 call with explicit polarity call
                     // ROS_INFO("Gen1 call");
                     PSU->WriteVI(msg.V, abs(msg.I));
                     if (this->nodeName == "/PSU5") {
+                        PSU->setPolarity(msg.I > 0 ? 0x00 : 0x01);
+                        this->currentPolarity = msg.I > 0 ? 0x00 : 0x01;}
+                    else if (this->nodeName == "/PSU0") {
+                        PSU->setPolarity(msg.I > 0 ? 0x01 : 0x02);
+                        this->currentPolarity = msg.I > 0 ? 0x01 : 0x02;
+                    }else if (this->nodeName == "/PSU1") {
                         PSU->setPolarity(msg.I > 0 ? 0x00 : 0x01);
                         this->currentPolarity = msg.I > 0 ? 0x00 : 0x01;
                     } else {

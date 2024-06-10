@@ -18,7 +18,7 @@ class PSU_node {
    private:
     std::unique_ptr<DXKDP_PSU>
         PSU;  // smart pointer to the DXKDPLIB instance used by the node.
-    ros::Subscriber VI_sub_;
+    ros::Subscriber VI_sub_, polaritySub_;
     ros::ServiceServer powerOnServer_;
     ros::ServiceServer shutdownServer_;
 
@@ -47,6 +47,8 @@ class PSU_node {
      * @param msg contains signed voltage and current values.
      */
     void callbackVIWrite(const ros_coils::VI &msg);
+
+    void callbackPolarity(const ros_coils::Polarity &msg);
 
     bool callbackSetup(std_srvs::Trigger::Request &req,
                        std_srvs::Trigger::Response &res);

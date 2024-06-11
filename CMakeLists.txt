@@ -167,9 +167,10 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/ali_sweep.py
   scripts/input_field.py
   scripts/test_transitions.py
+  scripts/sweep_man.py
+  scripts/sweep_csv.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

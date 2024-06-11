@@ -85,6 +85,48 @@ See [6PSU + Field](launch/6psu_field.launch) example for usage.
 
 [3d coils backend](https://github.com/vfrancescon/coil_manipulator)
 
+## Utilities
+
+### General Notes
+
+If the PSUs are ever requested to push more voltage/current than they can handle (70% of the rated values), the field interface will shutdown. In this case, it is best you close ros nodes, check how the shutdown was triggered and then start again.
+
+If the change in field magnitude is ever bigger than 15mT, the field interface will also shutdown. Similarly, there is a limit of 22/22/22mT on each axis.
+
+### Manual Field Input
+
+[Launch File](launch/field_manual_op.launch). This program starts up the Field interface and takes in field inputs(e.g. bx ENTER -> by ENTER -> bz ENTER), one at a time. To exit, type "q" or "shutdown", then close the field interface with Ctrl+C as usual.
+
+To launch this, use:
+
+```bash
+roslaunch ros_coils field_manual_op.launch
+```
+
+### Manual sweep
+
+[Launch File](launch/sweep_man.launch). This program starts up the Field interface and sweeps between the negative and positive sides of the argument "MaxAbs". This argument can be edited in the launch file. While technically multiple axis can be swept at once, they will not be synchronous unless their respective magnitude is equal.
+
+Absolute magnitude, frequency and increment size are editable from [here](launch/sweep_man.launch).
+
+To launch this, use:
+
+```bash
+roslaunch ros_coils sweep_man.launch
+```
+
+### CSV Sweep
+
+[Launch File](launch/sweep_csv.launch). This program starts up the Field interface and runs through a csv at a given frequency. The template for csv files is given [here](csv/sample_csv.csv). Please be mindful this checks that all inputs in the csv are valid numbers, but all safety checks are still handled top-level by the field and PSU interfaces.
+
+Csv file path (relative to the package) and frequency can be edited [here](launch/sweep_csv.launch).
+
+To launch, use:
+
+```bash
+roslaunch ros_coils sweep_csv.launch
+```
+
 ## Author
 
 Vittorio Francescon

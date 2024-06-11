@@ -1,0 +1,14 @@
+<launch>
+<!-- X Supplies -->
+    <!-- <include file="$(find ros_coils)/launch/6psu_field.launch"/> -->
+
+    <!-- maximum field absolute. [bx, by, bz] -->
+
+    <!-- Frequency for the sweep -->
+    <rosparam param="csv_rate">5</rosparam>
+
+    <!-- Increment for the sweep -->
+    <rosparam param="csv_path">csv/sample_csv.csv</rosparam>
+
+    <node name = "sweep_csv" pkg="ros_coils" type="sweep_csv.py" output="screen"> </node>
+</launch>

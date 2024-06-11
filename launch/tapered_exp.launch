@@ -1,6 +1,0 @@
-<launch>
-
-    <include file="$(find ros_coils)/launch/6psu_field.launch"/>
-    <node name="ali_pub" pkg="ros_coils" type="ali_sweep.py" output="screen" />
-
-</launch>

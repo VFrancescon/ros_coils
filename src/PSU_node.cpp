@@ -92,8 +92,27 @@ void PSU_node::callbackVIWrite(const ros_coils::VI& msg) {
     bool stop_command = Vchange && Ichange;
 
     switch (debugMode) {
-        case false:  // this branch executes if debugMode is false
+        case false:  // this branch executes if debugMode param is false
             if (!stop_command) {
+                
+                /**
+                 * @brief General structure of the VI interface
+                 * All supplies (except PSU3) have a separate Polarity and VI interface.
+                 * The VI values given from the message get converted to unsigned int values.
+                 * The polarity command is complete nonsense, it works differently on different PSUs.
+                 * Technically the polarity command has 4 valid arguments: 0x00, 0x01, 0x02, 0x03.
+                 * 
+                 * On the original power supplies (now PSU2, PSU4), 0x00 -> Positive output, 0x01 -> Negative output.
+                 * And arguments 0x02 and 0x03 actuall trigger an error.
+                 * 
+                 * On PSU3, there is no polarity interface altogether, the sign of the output current is determined by the sign of the current value in the VI interface.
+                 * 
+                 * On PSU0, PSU1, the behaviour is more complicated. In short, not only you need to find the correct state for the desired output,
+                 * but you also need to ensure that transitioning to it is allowed.
+                 * I could not find a logic to which state does what and what transition works, so I simply tested them all. See file ~ros_ws/src/ros_coils/transition_data.txt
+                 * From there, I used the states that allow free transition between them.
+                 */
+                
                 ROS_INFO("%s: V: %f, I: %f", this->nodeName.c_str(), msg.V,
                          msg.I);
                 if (this->nodeName ==

@@ -93,9 +93,7 @@ The polarity command is complete nonsense, it works differently on different PSU
 
 Technically the polarity command has 4 valid arguments: 0x00, 0x01, 0x02, 0x03.
 
-On the original power supplies (now PSU2, PSU4), 0x00 -> Positive output, 0x01 -> Negative output.
-
-And arguments 0x02 and 0x03 actuall trigger an error.
+On the original power supplies (now PSU2, PSU4), 0x00 -> Positive output, 0x01 -> Negative output, arguments 0x02 and 0x03 actuall trigger an error.
 
 On PSU3, there is no polarity interface altogether, the sign of the output current is determined by the sign of the current value in the VI interface.
 

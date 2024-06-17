@@ -3,13 +3,13 @@
     <include file="$(find ros_coils)/launch/6psu_field.launch"/>
 
     <!-- maximum field absolute. [bx, by, bz] -->
-    <rosparam param="maxAbs">[10,0,0]</rosparam> 
+    <rosparam param="maxAbs">[15,0,0]</rosparam> 
 
     <!-- Frequency for the sweep -->
-    <rosparam param="sweepRate">0.125</rosparam>
+    <rosparam param="sweepRate">0.25</rosparam>
 
     <!-- Increment for the sweep -->
-    <rosparam param="increment">2.5</rosparam>
+    <rosparam param="increment">1.5</rosparam>
 
     <node name = "sweep_man" pkg="ros_coils" type="sweep_man.py" output="screen"> </node>
 </launch>

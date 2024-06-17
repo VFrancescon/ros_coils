@@ -56,6 +56,8 @@ export ROS_MASTER_URI=http://192.168.0.10:11311
 
 ## Notes
 
+### General Usage Notes
+
 * PSU nodes have a [Voltage/Current interface](msg/VI.msg), with embedded calls to polarity setting.
 
 * Each PSU node has a ROS Param "debug", to be used to omit all Serial calls to PSU.
@@ -80,6 +82,28 @@ See [6PSU + Field](launch/6psu_field.launch) example for usage.
 * New values are published only if they differ from the currently outputted values. This is to prevent the supplies from being overwhelmed.
 
 * Current Max frequency is unknown, but bound by X2 not getting overwhelmed by just existing. Needs investigation.
+
+### Polarity
+
+All supplies (except PSU3) have a separate Polarity and VI interface.
+
+The VI values given from the message get converted to unsigned int values.
+
+The polarity command is complete nonsense, it works differently on different PSUs.
+
+Technically the polarity command has 4 valid arguments: 0x00, 0x01, 0x02, 0x03.
+
+On the original power supplies (now PSU2, PSU4), 0x00 -> Positive output, 0x01 -> Negative output.
+
+And arguments 0x02 and 0x03 actuall trigger an error.
+
+On PSU3, there is no polarity interface altogether, the sign of the output current is determined by the sign of the current value in the VI interface.
+
+On PSU0, PSU1, the behaviour is more complicated. In short, not only you need to find the correct state for the desired output, but you also need to ensure that transitioning to it is allowed.
+
+I could not find a logic to which state does what and what transition works, so I simply tested them all. See file ~ros_ws/src/ros_coils/transition_data.txt
+
+From there, I used the states that allow free transition between them.
 
 ## Dependencies
 

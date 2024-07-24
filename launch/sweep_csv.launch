@@ -1,6 +1,6 @@
 <launch>
 <!-- X Supplies -->
-    <!-- <include file="$(find ros_coils)/launch/6psu_field.launch"/> -->
+    <include file="$(find ros_coils)/launch/6psu_field.launch"/>
 
     <!-- maximum field absolute. [bx, by, bz] -->
 

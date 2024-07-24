@@ -18,7 +18,7 @@ if __name__ == '__main__':
     bx = []
     by = []
     bz = []
-    csv_path = path_to_pkg + '/csv/sample_csv.csv'
+    csv_path = path_to_pkg + '/csv/' + csv_path
     with open(csv_path, 'r') as file:
         reader = csv.reader(file)
         next(reader)  # Skip the header row

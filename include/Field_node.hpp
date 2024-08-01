@@ -46,7 +46,7 @@ class FieldNode {
     float cal_z = 0.633;  //!< Bz calibration factor. Units are mT/A
     float ix = 0, iy = 0, iz = 0;
     float bx = 0, by = 0, bz = 0;
-    int maxField = 20;
+    int maxField = 22;
     int maxChange =
         15;  //!< Maximum change in current allowed per cycle. Units are A
     std::vector<std::string> allAddress;
